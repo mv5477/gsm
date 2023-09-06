@@ -1,0 +1,12 @@
+data/*
+
+imr_prototype.ipynb
+imr_prototype.py
+notes.txt
+parse.html
+todo.txt
+
+gsm/__pycache__
+gsm/conf/__pycache__
+gsm/data/__pycache__
+gsm/models/__pycache__
