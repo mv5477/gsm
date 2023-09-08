@@ -7,6 +7,7 @@ import math
 import random
 import json
 import copy
+from typing import Tuple
 from sklearn.linear_model import LinearRegression
 from sklearn.neighbors import KDTree
 from scipy.spatial import distance
@@ -17,23 +18,17 @@ import gsm.conf.conf_player2vec as cfg
 
 # Model training
 
-def column_to_ind(df, column):
-    out_dict = {}
-    values = df[column].to_list()
-    #print(str(len(values))+' || '+str(len(df[column].unique().tolist())))
-    for i in range(len(values)):
-        out_dict[values[i]] = i
-    return out_dict
-
-def index_column_to_ind(df):
-    out_dict = {}
-    values = df.index.to_list()
-    for i in range(len(values)):
-        out_dict[values[i]] = i
-    return out_dict
-
-
-def load_list_and_map(infile, col):
+def load_list_and_map(infile: str, col: str) -> Tuple[list, dict]:
+    """
+    Load list and dict of elements in column col, for future reference (retrieving names etc.)
+    
+    Args:
+        infile: input file
+        col: dataframe column containing keys/names to read
+        
+    Returns:
+        List, dict of elements (list for mapping by index, dict for mapping by name)
+    """
     print(f'Running load_list_and_map on file {infile}...')
     elts_list = []
     elts_dict = {}
@@ -45,7 +40,18 @@ def load_list_and_map(infile, col):
     return elts_list, elts_dict
 
 
-def infer_full_context(s_round, base_tourney_name, contexts_dict):
+def infer_full_context(s_round: str, base_tourney_name: str, contexts_dict: dict) -> int:
+    """
+    Building full context name from round and tournament name, and get matching index
+        
+    Args:
+        s_round: round in raw string form
+        base_tourney_name: tournament name
+        contexts_dict
+        
+    Returns:
+        Index of input context in contexts list
+    """
     i_round = -1
     if s_round in ['Q1R','Q2R','QQ','final round','qualifying round']:
         i_round = 0
@@ -62,9 +68,17 @@ def infer_full_context(s_round, base_tourney_name, contexts_dict):
         return -1
     
 
-def infer_winner_from_scoreline(scoreline):
+def infer_winner_from_scoreline(scoreline: str) -> int:
+    """
+    Find winner by looking at the (last set) results
+        
+    Args:
+        scoreline: final match scoreline, separated by set
+        
+    Returns:
+        1 (2) if player one (two) was the winner, respectively
+    """
     players_scores = scoreline[2:-2].split('], [')
-    #scores = s_last_round.split(', ')
     try:
         p_one_score_last_round = int(players_scores[0].split(', ')[-1])
     except ValueError:
@@ -83,7 +97,10 @@ def infer_winner_from_scoreline(scoreline):
         return 0
 
 
-def update_edges(edges_dict, ind_player, ind_context, wins):
+def update_edges(edges_dict: dict, ind_player: int, ind_context: int, wins: bool):
+    """
+    Helper function to update the edges dict depending on the result
+    """
     p_dict = {}
     if ind_player in edges_dict:
         p_dict = edges_dict[ind_player]
@@ -98,9 +115,22 @@ def update_edges(edges_dict, ind_player, ind_context, wins):
     edges_dict[ind_player] = p_dict
 
 
-# edge = [player,context,wins,losses]
-# only select players with results
-def load_edges_and_players_from_results(players_feats_file, results_folder, contexts_dict):
+def load_edges_and_players_from_results(players_feats_file: str, results_folder: str,
+                                        contexts_dict: dict) -> Tuple[list, list, dict]:
+    """
+    Parse results from folder as weighted edges of the joint graph representation
+    
+    edge = [player,context,wins,losses]
+    Also read players file, loading structures similar to 'load_list_and_map' only for players with valid results
+        
+    Args:
+        players_feats_file: players info file
+        results_folder: match results root folder
+        contexts_dict: mapping str->int of contexts
+        
+    Returns:
+        List of edges, list, dict of players
+    """
     print('Running load_edges_and_players_from_results...')
     df_p = pd.read_csv(players_feats_file)
     p_names = df_p['name'].to_list()
@@ -123,8 +153,6 @@ def load_edges_and_players_from_results(players_feats_file, results_folder, cont
                 df = pd.read_csv(f_path, skiprows=1)
                 for _, row in df.iterrows():
                     if row['player_one'] in raw_players_dict and row['player_two'] in raw_players_dict:
-                        #ind_player_one = players_dict[row['player_one']]
-                        #ind_player_two = players_dict[row['player_two']]
                         player_one = row['player_one']
                         player_two = row['player_two']
                         ind_context = infer_full_context(row['round'], base_tourney_name, contexts_dict)
@@ -163,7 +191,21 @@ def load_edges_and_players_from_results(players_feats_file, results_folder, cont
     return weighted_edges_list, players_list, players_dict
 
 
-def load_results(results_folder, players_dict, contexts_dict):
+def load_results(results_folder: str, players_dict: dict, contexts_dict: dict) -> list:
+    """
+    Lightweight version of 'load_edges_and_players_from_results', only loading results as edges
+    
+    edge = [player,context,wins,losses]
+    Used to read test data for model evaluation
+
+    Args:
+        results_folder: match results root folder
+        players_dict: mapping str->int of players
+        contexts_dict: mapping str->int of contexts
+        
+    Returns:
+        List of edges
+    """
     match_results = []
     dirs = [d for d in os.listdir(results_folder) if os.path.isdir(os.path.join(results_folder, d))]
     for d in dirs:
@@ -197,12 +239,37 @@ def sigmoid(x):
     return sig
 
 
-def get_random_embedding(rng, d, lower, upper):
+def get_random_embedding(rng: np.random, d: int, lower: float, upper: float) -> np.array:
+    """
+    Generates random embedding with values bounded
+
+    Args:
+        rng: numpy random generator
+        d: number of dimensions for the embedding
+        lower: lower bound of the values to generate
+        upper: upper bound
+        
+    Returns:
+        Random embedding
+    """
     embd = [rng.uniform(lower,upper) for _ in range(d)]
     return np.array(embd)
     
     
-def init_embeddings(n_elts, d, seed=16):
+def init_embeddings(n_elts: int, d: int, seed=16) -> list:
+    """
+    Generate n_elts random embeddings
+    
+    edge = [player,context,wins,losses]
+
+    Args:
+        n_elts: number of embeddings to generate
+        d: number of dimensions
+        seed: seed of the rng
+        
+    Returns:
+        List of random embeddings
+    """
     rng = np.random.default_rng(seed)
     lower_bound = -1./(2.*float(d))
     upper_bound = 1./(2.*float(d))
@@ -212,7 +279,20 @@ def init_embeddings(n_elts, d, seed=16):
         x_p.append(emb)
     return x_p
 
-def compute_embeddings_pairwise_relevance(embd_one, embd_two, method='norm'):
+def compute_embeddings_pairwise_relevance(embd_one: np.array, embd_two: np.array, method='norm') -> float:
+    """
+    Compute pairwise relevance (similarity) between two embeddings
+    
+    Use 'norm' as method
+
+    Args:
+        embd_one: embedding
+        embd_two: embedding
+        method = 'norm' or 'euclidean'
+        
+    Returns:
+        Pairwise relevance
+    """
     if method=='norm':
         rel = math.exp(-np.linalg.norm(embd_one-embd_two))
     elif method=='euclidean':
@@ -222,7 +302,19 @@ def compute_embeddings_pairwise_relevance(embd_one, embd_two, method='norm'):
         rel = math.exp(-np.linalg.norm(embd_one-embd_two))
     return rel
 
-def meets_conditions(prev_rel, embd_one, embd_two, embd_three):
+def meets_conditions(prev_rel: float, embd_one: np.array, embd_two: np.array, embd_three: np.array) -> bool:
+    """
+    Check that the three embeddings fulfill the condition for anchor embeddings generation
+
+    Args:
+        prev_rel: relevance between embd_one and embd_two
+        embd_one: embedding
+        embd_two: embedding
+        embd_three: embedding
+        
+    Returns:
+        List of edges
+    """
     rel_one_three = compute_embeddings_pairwise_relevance(embd_one, embd_three)
     rel_two_three = compute_embeddings_pairwise_relevance(embd_two, embd_three)
     #print(f'meets_conditions : {prev_rel} | {rel_one_three} | {rel_two_three}')
@@ -230,7 +322,23 @@ def meets_conditions(prev_rel, embd_one, embd_two, embd_three):
     second_condition = (prev_rel > rel_two_three)
     return (first_condition and second_condition)
 
-def adjust_embd_manually(rng, embd_one, embd_two, lower, upper, factor=0.1):
+def adjust_embd_manually(rng: np.random, embd_one: np.array, embd_two: np.array,
+                         lower: float, upper: float, factor=0.1) -> np.array:
+    """
+    Adjust embedding values by hand to force it to meets the condition
+    
+    Does not really work; run more random attempts instead for now...
+
+    Args:
+        rng: random generator
+        embd_one: embedding
+        embd_two: embedding
+        lower: lower bound
+        upper: upper bound
+        
+    Returns:
+        New embedding
+    """
     embd = []
     for i in range(len(embd_one)):
         diff = abs(embd_one[i] - embd_two[i])
@@ -249,7 +357,24 @@ def adjust_embd_manually(rng, embd_one, embd_two, lower, upper, factor=0.1):
         embd.append(val)
     return np.array(embd)
 
-def get_random_embedding_with_condition(rng, d, lower, upper, embeddings, previous_inds, n_tries_max=10000):
+def get_random_embedding_with_condition(rng: np.random, d: int, lower: float, upper: float,
+                                        embeddings: list, previous_inds: Tuple[int,int], n_tries_max=10000) -> np.array:
+    """
+    Generate random embedding r_3 such that rel(r_1,r_2) > rel(r_1,r_3) and rel(r_1,r_2) > rel(r_2,r_3)
+    
+    See original trans2vec article for reference on anchor embeddings
+
+    Args:
+        rng: random generator
+        d: number of dimensions
+        lower: lower bound
+        upper: upper bound
+        embeddings: list of embeddings
+        previous_inds: indexes of r_1 and r_2 in embeddings
+        
+    Returns:
+        New embedding
+    """
     prev_rel = compute_embeddings_pairwise_relevance(embeddings[previous_inds[0]], embeddings[previous_inds[1]])
     #print(f'get_random_embedding_with_condition : prev_rel = {prev_rel}')
     embd = []
@@ -271,7 +396,19 @@ def get_random_embedding_with_condition(rng, d, lower, upper, embeddings, previo
     #print(f'meets_conditions : {c} | {prev_rel} | {rel_one_three} | {rel_two_three}')
     return embd
 
-def init_anchor_embeddings_from_sim_mat(sim_mat, d, seed=12):
+def init_anchor_embeddings_from_sim_mat(sim_mat: list, d: int, seed=12) -> list:
+    """
+    Generate anchor embeddings based on the input relevance/similarity matrix
+    
+    See original trans2vec article for reference on anchor embeddings
+
+    Args:
+        sim_mat: similarity matrix
+        d: number of dimensions
+        
+    Returns:
+        List of anchor embeddings
+    """
     pair_to_rel = {}
     n = len(sim_mat)
     for i in range(n):
@@ -308,7 +445,17 @@ def init_anchor_embeddings_from_sim_mat(sim_mat, d, seed=12):
     return embeddings
 
 
-def normalize_feat(d, feat):
+def normalize_feat(d: dict, feat: str) -> dict:
+    """
+    Normalize numeric feature to a [0,1] range
+    
+    Args:
+        d: input data
+        feat: feature to normalize
+        
+    Returns:
+        Data with feat normalized
+    """
     vals = [d[t][feat] for t in d if d[t][feat]>0]
     #print(vals)
     new_d = {}
@@ -321,8 +468,16 @@ def normalize_feat(d, feat):
         new_d[t] = entry
     return new_d
 
-def infer_features_type(d):
-    #print(d)
+def infer_features_type(d: dict) -> dict:
+    """
+    Find out if features are numeric or categoric
+    
+    Args:
+        d: input data
+        
+    Returns:
+        Type for each feature
+    """
     ignore = ['name', 'link']
     first_key = next(iter(d))
     feats = list(d[first_key])
@@ -336,7 +491,17 @@ def infer_features_type(d):
     return feat_to_type
         
 
-def compute_sim_mat(tourneys_dict, feats_to_normalize):
+def compute_sim_mat(tourneys_dict: dict, feats_to_normalize: list) -> Tuple[list, list]:
+    """
+    Compute similarity matrix from tournaments features file
+    
+    Args:
+        tourneys_dict: tournaments features as dictionary
+        feats_to_normalize: numeric features to normalize
+        
+    Returns:
+        Similarity matrix, list of tournaments names
+    """
     tourneys = list(tourneys_dict.keys())
     n = len(tourneys_dict)
     sim_mat = [ [0.]*n for _ in range(n)]
@@ -364,8 +529,21 @@ def compute_sim_mat(tourneys_dict, feats_to_normalize):
             sim_mat[j][i] = diff
     return sim_mat, tourneys
 
-# not very pretty, but enables to reuse the compute_sim_mat function already implemented and tested
-def read_feats_as_dict(infile, i_index=0, ignore=[]):
+
+def read_feats_as_dict(infile: str, i_index=0, ignore=[]) -> dict:
+    """
+    Store data from csv as dict
+    
+    Not very pretty, but enables to reuse the compute_sim_mat function already implemented and tested
+    
+    Args:
+        infile: input csv file
+        i_index: column index of feature that should be used as key
+        ignore: list of features to ignore
+        
+    Returns:
+        Data dict with one entry per input row
+    """
     feats_dict = {}
     df = pd.read_csv(infile)
     feats_names = df.columns.values.tolist()
@@ -377,6 +555,9 @@ def read_feats_as_dict(infile, i_index=0, ignore=[]):
     return feats_dict
 
 def compute_anchor_embedding_contexts(tourneys_feats_file, d):
+    """
+    v1, deprecated
+    """
     print('Running compute_anchor_embedding_contexts...')
     tourneys_feats = read_feats_as_dict(tourneys_feats_file, ignore=['name','link'])
     sim_mat, tourneys = compute_sim_mat(tourneys_feats, feats_to_normalize=['last_prize_pool'])
@@ -398,8 +579,18 @@ def map_column(x, d):
 def is_in_dict(x, d):
     return (x in d)
 
-# one-hot encoding for categorical features
-def format_players_dataframe(players_feats_file, players_dict):
+# 
+def format_players_dataframe(players_feats_file: str, players_dict: dict) -> pd.DataFrame:
+    """
+    One-hot encoding for categorical features
+    
+    Args:
+        players_feats_file: input players features file
+        players dict: str->int players mapping
+        
+    Returns:
+        Preprocessed players info dataframe
+    """
     df = pd.read_csv(players_feats_file)
     to_drop = ['country','name']
     categorical_feats = ['hand','backhand_type','subregion']
@@ -428,7 +619,22 @@ def format_players_dataframe(players_feats_file, players_dict):
     print(f'=> df = {df.shape}')
     return df
 
-def load_players_data(players_feats_file, edges_pc, players_dict):
+def load_players_data(players_feats_file: str, edges_pc: list, players_dict: dict) -> Tuple[pd.DataFrame,pd.DataFrame]:
+    """
+    Read and preprocess players features, and store in two dataframes
+    
+    The first one has labels depending on the match result expressed in each edge (1/-1 for win/loss),
+    rows are duplicated to represent each win and loss, i.e. there is one row per match result per player
+    The second one only has players features, i.e. one row per player
+    
+    Args:
+        players_feats_file: input players features file
+        edges_pc: list of edges, edge = [player,context,wins,losses]
+        players dict: str->int players mapping
+        
+    Returns:
+        Dataframe with labels, dataframe with players features only
+    """
     player_to_results = {}
     for edge in edges_pc:
         p = edge[0]
@@ -461,7 +667,22 @@ def load_players_data(players_feats_file, edges_pc, players_dict):
     return df_with_labels, df_raw
     
     
-def load_contexts_raw_data(contexts_feats_file):
+def load_contexts_raw_data(contexts_feats_file: str) -> pd.DataFrame:
+    """
+    Similar to 'load_players_data', but only building features dataframe
+    
+    It does not make sense for a context to have a label,
+    since there is always one winner and one loser in each match, so it would cancel out
+    (see high level project documentation for more details)
+    
+    Args:
+        players_feats_file: input players features file
+        edges_pc: list of edges, edge = [player,context,wins,losses]
+        players dict: str->int players mapping
+        
+    Returns:
+        Dataframe with labels, dataframe with players features only
+    """
     df = pd.read_csv(contexts_feats_file)
     to_drop = ['name_stage','name','link','location_country']
     categorical_feats = ['surface','type','subregion','round_tier']
@@ -485,7 +706,16 @@ def load_contexts_raw_data(contexts_feats_file):
 
 
 # we can only have binary (= categorical encoded) or numeric features
-def infer_df_features_type(df):
+def infer_df_features_type(df: pd.DataFrame) -> list:
+    """
+    Same as 'infer_features_type', applied to a dataframe instead of a dict
+    
+    Args:
+        df: input DataFrame
+        
+    Returns:
+        List of features types
+    """
     types = []
     feats = df.columns.values.tolist()
     for ifeat in range(len(feats)):
@@ -503,7 +733,18 @@ def i_func(x, y):
     else:
         return 0
 
-def compute_players_relevance(edges, w, users_feats):
+def compute_players_relevance(edges: list, w: list, users_feats: pd.DataFrame)-> dict:
+    """
+    Compute closest neighbors (from edges) players pairwise relevance
+    
+    Args:
+        edges: list of closest neighbors
+        w: features weights
+        users_feats: DataFrame with players features
+        
+    Returns:
+        Dict with closest neighbors players relevance
+    """
     #X, _ = split_xy(users_feats)
     X = users_feats.values
     rels_u = {}
@@ -534,7 +775,22 @@ def i_func_t(x, y, t):
         return abs(x-y)
    
 
-def compute_relevance(edges, feats, weights):
+def compute_relevance(edges: list, feats: pd.DataFrame, weights: list) -> dict:
+    """
+    Cleaner/more general version of 'compute_players_relevance'
+    
+    Can be used for both players and contexts
+    Supports case where no weights are used
+    Used in v2
+    
+    Args:
+        edges: list of closest neighbors
+        feats: DataFrame with players features
+        weights: features weights
+        
+    Returns:
+        Dict with closest neighbors players relevance
+    """
     if len(weights)==0:
         weights = [1. for _ in range(feats.shape[1])]
     types = infer_df_features_type(feats)
@@ -556,13 +812,24 @@ def compute_relevance(edges, feats, weights):
         rels_u[u] = new_dict
     return rels_u
 
-def split_xy(data):
+def split_xy(data: pd.DataFrame) -> Tuple[pd.DataFrame,pd.DataFrame]:
     y = data.iloc[:,-1]
     X = data.copy()
     X.drop(X.columns[-1], axis=1, inplace=True)
     return X, y
 
-def get_edges_from_kdtree(data, k_nn, weights):
+def get_edges_from_kdtree(data: pd.DataFrame, k_nn: int, weights: list) -> list:
+    """
+    Find closest neighbors from data
+    
+    Args:
+        data: features
+        k_nn: number of closest neighbors to return
+        weights: features weights, if any
+        
+    Returns:
+        List of [int,int] edges describing closest neighbor relationships between elements
+    """
     edges = []
     #X, _ = split_xy(data)
     X = data.values
@@ -585,7 +852,16 @@ def learn_weights(data):
     coeffs_np = np.asarray(reg.coef_)
     return coeffs_np
 
-def fix_opposed_embeddings(d):
+def fix_opposed_embeddings(d: int) -> Tuple[np.array,np.array]:
+    """
+    Fix embeddings that represent the two match outcomes: win or loss
+    
+    Args:
+        d: number of dimensions
+        
+    Returns:
+        'loss' embedding, 'win' embedding
+    """
     lower_bound = -1./(2.*float(d))
     upper_bound = 1./(2.*float(d))
     x_0 = [lower_bound for _ in range(d)]
@@ -601,6 +877,17 @@ def get_random_other(elts, i_used):
     return rnd
 
 def has_converged(epsilon, vects_before, vects_after):
+    """
+    Compare vectors before and after, check if they have changed by less than epsilon in total
+    
+    Args:
+        epsilon: convergence threshold
+        vects_before: list of vectors before iteration
+        vects_after: list of vectors after iteration
+        
+    Returns:
+        Dict with closest neighbors players relevance
+    """
     if len(vects_before)!=len(vects_after):
         print('warning: found mismatched vector length when computing convergence (STOPPING)')
         return True
@@ -616,6 +903,9 @@ def has_converged(epsilon, vects_before, vects_after):
 
 # Player2Vec
 def learn_players_embeddings(edges_pc, users_data, users_data_raw, x_c, n_players, n_dims, alpha, beta_one, beta_two, epsilon, k_nn):
+    """
+    v1, only learning players embeddings (cf. doc)
+    """
     print('Init embeddings...')
     x_p = init_embeddings(n_players, n_dims)
     print('Learning weights...')
@@ -663,6 +953,9 @@ def learn_players_embeddings(edges_pc, users_data, users_data_raw, x_c, n_player
 
 
 def learn_joint_embeddings(edges_pc, players_data, players_data_raw, contexts_data_raw, n_dims, alpha, beta_one, beta_two, epsilon, k_nn):
+    """
+    v2, joint learning of players and contexts embeddings
+    """
     print('Init embeddings...')
     x_p = init_embeddings(players_data_raw.shape[0], n_dims)
     x_c = init_embeddings(contexts_data_raw.shape[0], n_dims)
@@ -775,6 +1068,9 @@ def evaluate_embeddings_on_test_folder_v2(folder_path, x_p, x_c, x_r, players_di
     
 
 def p2vec_wrapper(players_feats_file, tourneys_feats_file, results_folder, test_folder):
+    """
+    v1
+    """
     n_dims = 32     # 64
     alpha = 0.4
     beta_one = 0.1
@@ -794,6 +1090,9 @@ def p2vec_wrapper(players_feats_file, tourneys_feats_file, results_folder, test_
 
 
 def p2vec_v2_wrapper(players_feats_file, tourneys_feats_file, results_folder, test_folder):
+    """
+    v2
+    """
     n_dims = 32     # 64
     alpha = 0.4
     beta_one = 0.1
@@ -811,6 +1110,9 @@ def p2vec_v2_wrapper(players_feats_file, tourneys_feats_file, results_folder, te
     evaluate_embeddings_on_test_folder_v2(test_folder, x_p, x_c, x_r, players_dict, contexts_dict, gamma)
 
 def p2vec_v2_wrapper():
+    """
+    v2 using config file
+    """
     n_dims = cfg.n_dims
     alpha = cfg.alpha
     beta_one = cfg.beta_one

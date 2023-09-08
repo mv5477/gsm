@@ -2,7 +2,7 @@ import unittest
 import numpy as np
 import sys
 import os
-sys.path.append(os.path.abspath(os.path.join('..', 'gsm')))
+#sys.path.append(os.path.abspath(os.path.join('..', 'gsm')))
 import gsm.models.player2vec as p2vec
 import gsm.conf.conf_player2vec as cfg
 
@@ -36,4 +36,4 @@ class Player2VecUnitTests(unittest.TestCase):
         self.assertIs(c, True)
 
 
-unittest.main()
+#unittest.main()

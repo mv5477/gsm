@@ -1,4 +1,6 @@
-import data.webscrapping as ws
+import gsm.data.webscrapping as ws
+
+"""Simple wrapper calling the parsing of web pages to find results and players"""
 
 if __name__=='__main__':
     scrapper = ws.WikiScrapper()

@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import sys
 import os
-sys.path.append(os.path.abspath(os.path.join('..', 'gsm')))
+#sys.path.append(os.path.abspath(os.path.join('..', 'gsm')))
 import gsm.data.data_prep as data_prep
 import gsm.conf.conf_data_prep as cfg
 
@@ -11,13 +11,13 @@ class DataPrepUnitTests(unittest.TestCase):
     '''Unit tests for the data_prep module'''
     
     def test_countries_file(self):
-        print("Cheking integrity of the countries reference file")
+        print("Checking integrity of the countries reference file")
         df_countries = pd.read_csv(cfg.countries_file, sep=',', usecols=['name','sub-region'])
         subregions = df_countries['sub-region'].unique().tolist()
         self.assertEqual(len(subregions), 18)
         
     def test_normalize_feat(self):
-        print("Cheking feature normalization process")
+        print("Checking feature normalization process")
         feat = 'feat_to_norm'
         data_dict = {'id0': {feat: 20}, 'id1': {feat: 40}, 'id2': {feat: 70},
                      'id3': {feat: 200}, 'id4': {feat: 220}}
@@ -34,4 +34,4 @@ class DataPrepUnitTests(unittest.TestCase):
             np.testing.assert_almost_equal(normed['id4'][feat], 1.0)
 
 
-unittest.main()
+#unittest.main()

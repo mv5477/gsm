@@ -2,7 +2,7 @@ import unittest
 import numpy as np
 import sys
 import os
-sys.path.append(os.path.abspath(os.path.join('..', 'gsm')))
+#sys.path.append(os.path.abspath(os.path.join('..', 'gsm')))
 from gsm.data.webscrapping import WikiScrapper
 
 class WikiScrapperUnitTests(unittest.TestCase):
@@ -51,4 +51,4 @@ class WikiScrapperUnitTests(unittest.TestCase):
         self.assertEqual(n_matches, len(player_info))
 
 
-unittest.main()
+#unittest.main()

@@ -3,22 +3,28 @@ import os
 import pandas as pd
 import json
 import copy
-sys.path.append(os.path.abspath(os.path.join('..', 'gsm')))
+from typing import Tuple
+#sys.path.append(os.path.abspath(os.path.join('..', 'gsm')))
 import gsm.conf.conf_data_prep as cfg
 
-def get_latest_tourney_info(results_folder):
+def get_latest_tourney_info(results_folder: str) -> dict:
+    """
+    Parse raw results folder to get the most recent info on each tournament (draw size, surface, etc.)
+    
+    Args:
+        results_folder: path to the folder with raw match results (output of webscrapping)
+        
+    Returns:
+        The latest info for each tournament name
+    """
     t_info_dict = {}
     dirs = [d for d in os.listdir(results_folder) if os.path.isdir(os.path.join(results_folder, d))]
     for d in dirs:
-        #print(f'd = {d}')
         subfolder = os.path.join(results_folder, d)
-        #print(f'subfolder = {subfolder}')
         files = [d for d in os.listdir(subfolder) if os.path.isfile(os.path.join(subfolder, d))]
         # assumes that files are read "in order" (same as writing order, i.e. chronological)
         for f in files:
-            #print(f'f = {f}')
             f_path = os.path.join(subfolder, f)
-            #print(f'f_path = {f_path}')
             f = open(f_path, 'r')
             header = f.readline()
             header_dict = json.loads(header)
@@ -26,13 +32,22 @@ def get_latest_tourney_info(results_folder):
             t_info_dict[t_name] = header_dict
     return t_info_dict
 
-def normalize_feat(d, feat):
+def normalize_feat(d: dict, feat: str) -> dict:
+    """
+    Normalize numeric feature to a [0,1] range
+    
+    Args:
+        d: input data
+        feat: feature to normalize
+        
+    Returns:
+        Data with feat normalized
+    """
     vals = [d[t][feat] for t in d if d[t][feat]>0]
-    #print(vals)
     new_d = {}
     vals_min = min(vals)
     vals_max = max(vals)
-    print(f'feature {feat} : min = {vals_min} | max = {vals_max}')
+    #print(f'feature {feat} : min = {vals_min} | max = {vals_max}')
     for t in d:
         new_val = d[t][feat]
         if new_val>=0:
@@ -42,8 +57,16 @@ def normalize_feat(d, feat):
         new_d[t] = entry
     return new_d
 
-def infer_features_type(d):
-    #print(d)
+def infer_features_type(d: dict) -> dict:
+    """
+    Find out if features are numeric or categoric
+    
+    Args:
+        d: input data
+        
+    Returns:
+        Type for each feature
+    """
     ignore = ['name', 'link']
     first_key = next(iter(d))
     feats = list(d[first_key])
@@ -57,7 +80,18 @@ def infer_features_type(d):
     return feat_to_type
         
 
-def compute_sim_mat(tourneys_dict, feats_to_normalize):
+def compute_sim_mat(tourneys_dict: dict, feats_to_normalize: list) -> Tuple[list, list]:
+    """
+    DEPRECATED: this step is now done at data loading time in player2vec
+    Normalize features and compute similarity matrix
+    
+    Args:
+        tourneys_dict: input data
+        feats_to_normalize: numeric features to normalize
+        
+    Returns:
+        Similarity matrix as a 2d list, list of elements names in the same order as the matrix
+    """
     tourneys = list(tourneys_dict.keys())
     n = len(tourneys_dict)
     sim_mat = [ [0.]*n for _ in range(n)]
@@ -88,7 +122,17 @@ def compute_sim_mat(tourneys_dict, feats_to_normalize):
     return sim_mat, tourneys
     
     
-def compute_features(tourneys_dict, feats_to_normalize):
+def compute_features(tourneys_dict: dict, feats_to_normalize: list) -> Tuple[dict, list]:
+    """
+    Normalize features
+    
+    Args:
+        tourneys_dict: input data
+        feats_to_normalize: numeric features to normalize
+        
+    Returns:
+        Similarity matrix as a 2d list, list of elements names in the same order as the matrix
+    """
     tourneys = list(tourneys_dict.keys())
     n = len(tourneys_dict)
     d = copy.deepcopy(tourneys_dict)
@@ -97,12 +141,24 @@ def compute_features(tourneys_dict, feats_to_normalize):
     return d, tourneys
    
 
-def get_country_to_region_dict(countries_file):
+def get_country_to_region_dict(countries_file: str) -> dict:
+    """
+    Load country -> subregion mapping from reference file
+    
+    Args:
+        countries_file: csv file
+        
+    Returns:
+        Country to subregion mapping
+    """
     df_countries = pd.read_csv(countries_file, sep=',', usecols=['name','sub-region'])
     country_to_region = dict(df_countries.values)
     return country_to_region
 
 def write_sim_mat_to_csv(sim_mat, elts, outfile):
+    """
+    DEPRECATED
+    """
     data_rows = []
     for i in range(len(sim_mat)):
         data_row = [elts[i]]
@@ -113,7 +169,16 @@ def write_sim_mat_to_csv(sim_mat, elts, outfile):
     df.to_csv(outfile, index=False)
     
     
-def write_tourneys_features_to_csv(feats_dict, elts, outfile, n_tiers=3):
+def write_tourneys_features_to_csv(feats_dict: dict, elts: list, outfile: str, n_tiers=3):
+    """
+    Convert tournaments data from dict form to dataframe, and write to csv
+    
+    Args:
+        feats_dict: input data
+        elts: data elements names
+        outfile: output file path
+        n_tiers: number of groups of rounds for each tournament (0: qualifiers, 1: 1st to 4th round, 2: QF to F)
+    """
     first_key = next(iter(feats_dict))
     feats_list = list(feats_dict[first_key])
     data_rows = []
@@ -133,7 +198,15 @@ def write_tourneys_features_to_csv(feats_dict, elts, outfile, n_tiers=3):
     df.to_csv(outfile, index=False)
     
     
-def write_players_features_to_csv(feats_dict, elts, outfile):
+def write_players_features_to_csv(feats_dict: dict, elts: list, outfile: str):
+    """
+    Convert players data from dict form to dataframe, and write to csv
+    
+    Args:
+        feats_dict: input data
+        elts: data elements names
+        outfile: output file path
+    """
     first_key = next(iter(feats_dict))
     feats_list = list(feats_dict[first_key])
     data_rows = []
@@ -152,11 +225,9 @@ def write_players_features_to_csv(feats_dict, elts, outfile):
 
 
 def build_tourneys_file_old(results_folder, tourneys_simmat_outfile):
-    # read first line of each csv file to get tourney info
-    # If discrepancy => ?? take most recent for now
-    # Goal = square matrix with similarity between tourneys
-    # => compute pairwise distance
-    # features = type/rank, surface, indoors/outdoors, draw size, (most recent prize pool ?), continent/region
+    """
+    DEPRECATED
+    """
     print('Building tourneys relevance file...')
     country_to_region = get_country_to_region_dict(cfg.countries_file)
     tourneys_info = get_latest_tourney_info(results_folder)
@@ -172,11 +243,14 @@ def build_tourneys_file_old(results_folder, tourneys_simmat_outfile):
     write_sim_mat_to_csv(sim_mat, tourneys, tourneys_simmat_outfile)
     
     
-def build_tourneys_file(results_folder, tourneys_feats_outfile):
-    '''
-    Similarity only needs to be computed for a small neighborhood
-    => compute/normalize tourney features here, and compute similarity at a later stage
-    '''
+def build_tourneys_file(results_folder: str, tourneys_feats_outfile: str):
+    """
+    Build file with processed data for tournaments
+    
+    Args:
+        results_folder: input data folder with match results
+        tourneys_feats_outfile: output file
+    """
     print('Building tourneys relevance file...')
     country_to_region = get_country_to_region_dict(cfg.countries_file)
     tourneys_info = get_latest_tourney_info(results_folder)
@@ -198,16 +272,34 @@ def build_tourneys_file(results_folder, tourneys_feats_outfile):
     write_tourneys_features_to_csv(t_feats, tourneys, tourneys_feats_outfile)
    
 
-def get_yob_as_int(x):
+def get_yob_as_int(x: str) -> int:
+    """
+    Parse year of birth from date of birth
+    
+    Args:
+        x: date of birth in yyyy-mm-dd format
+        
+    Returns:
+        Year of birth
+    """
     yob = -1
     s_yob = x.split('-')[0]
-    #print(s_yob)
-    #if isinstance(s_yob, int):
     if s_yob.isdigit():
         yob = int(s_yob)
     return yob
 
-def read_csv_as_dict(infile, key_feat, attr_feats):
+def read_csv_as_dict(infile: str, key_feat: str, attr_feats: list) -> dict:
+    """
+    Store csv data in dict form, with one entry per row
+    
+    Args:
+        infile: input csv file
+        key_feat: feature/column name used as dict key
+        attr_feats: data features to store
+        
+    Returns:
+        Data as dict
+    """
     df = pd.read_csv(infile)
     df['dob'] = df['dob'].apply(get_yob_as_int)
     out_dict = {}
@@ -220,7 +312,7 @@ def read_csv_as_dict(infile, key_feat, attr_feats):
 
 def build_players_file_old(players_file, players_simmat_outfile):
     '''
-    Players "relevance" (= similarity) matrix
+    DEPRECATED
     '''
     print('Building players relevance file...')
     country_to_region = get_country_to_region_dict(cfg.countries_file)
@@ -238,7 +330,14 @@ def build_players_file_old(players_file, players_simmat_outfile):
     write_sim_mat_to_csv(sim_mat, players, players_simmat_outfile)
     
     
-def build_players_file(players_file, players_feats_outfile):
+def build_players_file(players_file: str, players_feats_outfile: str):
+    """
+    Build file with processed data for players
+    
+    Args:
+        players_file: input data file with raw player info
+        players_feats_outfile: output file
+    """
     print('Building players relevance file...')
     country_to_region = get_country_to_region_dict(cfg.countries_file)
     players_info = read_csv_as_dict(players_file, 'wiki_link', ['height','country','dob','hand','backhand_type'])
@@ -254,9 +353,3 @@ def build_players_file(players_file, players_feats_outfile):
         ti['subregion'] = subregion
     p_feats, players = compute_features(players_info, feats_to_normalize=['height','dob'])
     write_players_features_to_csv(p_feats, players, players_feats_outfile)
-    
-    
-def build_results_file(results_path, results_prepped_file):
-    df_out = pd.DataFrame()
-    
-    df_out.to_csv(results_prepped_file)

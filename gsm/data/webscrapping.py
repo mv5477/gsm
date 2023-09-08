@@ -6,10 +6,14 @@ from bs4 import BeautifulSoup
 import sys
 import os
 import json
-sys.path.append(os.path.abspath(os.path.join('..', 'gsm')))
+from typing import Tuple
+#sys.path.append(os.path.abspath(os.path.join('..', 'gsm')))
 import gsm.conf.conf_webscrapping as cfg
 
 class WikiScrapper:
+    """
+    Functions to scrap and parse data from Wikipedia
+    """
     wikipedia_page = ''
     root_page = ''
     
@@ -19,14 +23,17 @@ class WikiScrapper:
         self.data_folder_results = cfg.results_data_path
         self.data_folder_players = cfg.players_data_path
         
-    def get_results_path(self):
+    def get_results_path(self) -> str:
         return self.data_folder_results
         
-    def get_players_path(self):
+    def get_players_path(self) -> str:
         return self.data_folder_players
         
 
     def parse_root_page_sidebar(self):
+        """
+        DEPRECATED
+        """
         page = requests.get(self.root_page)
         #with open(rp_code) as rp:
         soup = BeautifulSoup(page.text, 'html.parser')
@@ -44,8 +51,14 @@ class WikiScrapper:
                 entries.append(entry)
         return entries
 
-    #TODO: include tourney types from list? (cleaner?)
-    def parse_root_page(self):
+
+    def parse_root_page(self)-> list:
+        """
+        Parse tournaments types from the root (ATP) page
+        
+        Returns:
+            List of tournaments types (name and link), e.g. 'ATP 500'
+        """
         page = requests.get(self.wikipedia_page+self.root_page)
         soup = BeautifulSoup(page.text, 'html.parser')
         table = soup.find_all('table')[1]
@@ -68,7 +81,16 @@ class WikiScrapper:
         print(f'Found {ntourneys_total} tournament types (from root page)')
         return entries
 
-    def extract_first_int(self, s):
+    def extract_first_int(self, s: str) -> int:
+        """
+        Parse first integer in string
+        
+        Args:
+            s: input string
+            
+        Returns:
+            Integer value
+        """
         if isinstance(s, int):
             return int(s)
         else:
@@ -78,7 +100,16 @@ class WikiScrapper:
             else:
                 return -1
 
-    def extract_prize_money(self, s):
+    def extract_prize_money(self, s: str) -> int:
+        """
+        Similar to extract_first_int, handling prize moneys formats
+        
+        Args:
+            s: input string
+            
+        Returns:
+            Integer value
+        """
         if isinstance(s, int):
             return int(s)
         else:
@@ -91,8 +122,16 @@ class WikiScrapper:
             else:
                 return -1
 
-    # Formatting and removing brackets for hard courts (Grand Slam table mostly)
-    def format_surface(self, raw_surf):
+    def format_surface(self, raw_surf: str) -> str:
+        """
+        Formatting and removing brackets for hard courts (Grand Slam table mostly)
+        
+        Args:
+            raw_surf: input string
+            
+        Returns:
+            'Hard' or 'Hard (indoor)'
+        """
         surf = raw_surf
         if 'hard' in raw_surf.lower():
             if 'indoor' in raw_surf.lower():
@@ -101,7 +140,17 @@ class WikiScrapper:
                 surf = 'Hard'
         return surf
 
-    def parse_tourneys_table(self, table, ttype_name):
+    def parse_tourneys_table(self, table, ttype_name: str) -> list:
+        """
+        Parse html table containing the list of tournaments
+        
+        Args:
+            table: BeautifulSoup object with parsed HTML table
+            ttype_name: tournament type
+            
+        Returns:
+            List of entries (dicts) with tournaments info
+        """
         i_surface = i_drawsize = 0
         entries = []
         trs = table.find_all('tr')
@@ -136,7 +185,16 @@ class WikiScrapper:
         #print(str(len(entries)))
         return entries
 
-    def parse_level_type(self, ttype):
+    def parse_level_type(self, ttype: dict) -> list:
+        """
+        Parse tournament type page (e.g. the ATP 500 page)
+        
+        Args:
+            ttype: input type (name and link)
+            
+        Returns:
+            List of entries (dicts) with tournaments info
+        """
         page = requests.get(self.wikipedia_page+ttype['link'])
         soup = BeautifulSoup(page.text, 'html.parser')
         tourney_list = []
@@ -157,7 +215,17 @@ class WikiScrapper:
         return tourney_list
         
 
-    def find_and_parse_tourney_infobox(self, page_soup, tourney_info):
+    def find_and_parse_tourney_infobox(self, page_soup, tourney_info: dict) -> dict:
+        """
+        Parse infobox on tournament page, adding prize pool and location country
+        
+        Args:
+            page_soup: BeautifulSoup object of tournament page
+            tourney_info: current tournament info
+            
+        Returns:
+            Updated tournament info
+        """
         #infobox = page_soup.find('table', class_='infobox vevent')
         infobox = page_soup.find('table', class_=re.compile('^infobox'))
         new_tourney_info = copy.deepcopy(tourney_info)
@@ -187,7 +255,16 @@ class WikiScrapper:
         new_tourney_info['last_prize_pool'] = last_prize_pool
         return new_tourney_info
 
-    def parse_level_tourney(self, tourney):
+    def parse_level_tourney(self, tourney: dict) -> Tuple[list, dict]:
+        """
+        Parse tournament page to gather the list of editions, and get additional info from infobox
+        
+        Args:
+            tourney: input tournament (name and link)
+            
+        Returns:
+            List of editions (= years), updated tournament info
+        """
         open_era_cutoff = 1969
         page = requests.get(self.wikipedia_page+tourney['link'])
         soup = BeautifulSoup(page.text, 'html.parser')
@@ -197,7 +274,6 @@ class WikiScrapper:
         items = soup.find_all('div', style='padding:0 0.25em')[0]
         editions = items.find_all('a', string=re.compile('[0-9]+'))
         last_ed = 0
-        #for ied in range(-1,0,-1):
         for ied in range(len(editions)-1,0,-1):
             ed = editions[ied]
             if ed.has_attr('href'):
@@ -208,7 +284,6 @@ class WikiScrapper:
         if last_ed>0 and last_ed<open_era_cutoff:
             items = soup.find_all('div', style='padding:0 0.25em')[1]
             editions = items.find_all('a', string=re.compile('[0-9]+'))
-        #print(str(len(editions)))
         for ed in editions:
             if ed.has_attr('href'):
                 ed_year = self.extract_first_int(ed.get_text())
@@ -223,15 +298,19 @@ class WikiScrapper:
         return editions_list, new_tourney_info
         
         
-    def parse_level_edition(self, ted):
+    def parse_level_edition(self, ted: dict) -> dict:
+        """
+        Parse tournament edition page to find link to (mens singles) results page
+        
+        Args:
+            ted: input edition (name and link)
+            
+        Returns:
+            Edition info with link to results page
+        """
         print(ted['link'])
         page = requests.get(self.wikipedia_page+ted['link'])
         soup = BeautifulSoup(page.text, 'html.parser')
-        #items = soup.find_all('div', string=re.compile('Singles$'))
-        #print(items)
-        #for item in items:
-        #    print(item)
-        #    print(item.get_text())
         tsp = {}
         is_wta = False
         is_atp = False
@@ -262,7 +341,16 @@ class WikiScrapper:
         return tsp
  
 
-    def infer_rounds_labels(self, tr_row):
+    def infer_rounds_labels(self, tr_row) -> list:
+        """
+        Harmonize rounds labels
+        
+        Args:
+            tr_row: BeautifulSoup object of results table
+            
+        Returns:
+            List of rounds labels
+        """
         tds = tr_row.find_all('td')
         raw_labels = [td.get_text().lower().strip() for td in tds if len(td.get_text())>3]
         labels_mapping = {'main_draw': {'first round': '1R', 'second round': '2R', 'third round': '3R', 'fourth round': '4R',
@@ -282,7 +370,16 @@ class WikiScrapper:
                 clean_labels.append(raw_label)
         return clean_labels
 
-    def fix_scoreline(self, scoreline):
+    def fix_scoreline(self, scoreline: list) -> list:
+        """
+        Catch edge cases in set results
+        
+        Args:
+            scoreline: input string
+            
+        Returns:
+            Cleaned scoreline
+        """
         new_sl = []
         for set_score in scoreline:
             iss = set_score
@@ -291,7 +388,16 @@ class WikiScrapper:
             new_sl.append(iss)
         return new_sl
         
-    def extract_players_scorelines(self, tr_rows):
+    def extract_players_scorelines(self, tr_rows) -> list:
+        """
+        Parse scorelines from the tree result in Wikipedia pages
+        
+        Args:
+            page_soup: BeautifulSoup object of results tree
+            
+        Returns:
+            List of scores for each line
+        """
         #regex_align_center = re.compile('^text-align:center')
         sls_per_row = []
         for tr_row in tr_rows:
@@ -312,9 +418,6 @@ class WikiScrapper:
                         else:
                             if td_row['style'].startswith('text-align:center'):
                                 score_content = td_row.get_text().strip()
-                                #print(f'score_content : {score_content}')
-                            #if score_content=='':
-                            #    match_is_over = True
                 #eol = tr_row.find('td', style=re.compile('^border'))
                 if row_as:
                     if current_player:
@@ -322,7 +425,6 @@ class WikiScrapper:
                         current_player = ''
                         current_scoreline = []
                         match_is_over = False
-                        #print(f'added entry {sls_row[-1]}')
                     player = row_as[-1]
                     current_player = player['href']
                     #print(f'new player : {current_player}')
@@ -341,7 +443,17 @@ class WikiScrapper:
         return sls_per_row
     
     
-    def scorelines_to_matches(self, scorelines_rows, rounds_labels):
+    def scorelines_to_matches(self, scorelines_rows: list, rounds_labels: list) -> list:
+        """
+        Reconstruct match results from rows scorelines
+        
+        Args:
+            scorelines_rows: list of scores for each row
+            rounds_labels: rounds labels
+            
+        Returns:
+            List of match results
+        """
         mappings = [[[1],[1,2],[1,2],[1,3],[1,3],[1,2],[1,2],[1,4],[1,4],[1,2],[1,2],[1,3],[1,3],[1,2],[1,2],[1]],          # Section table, 4 levels, no first round byes
                     [[2],[1,2],[1,3],[1,3],[1,2],[2],[4],[4],[2],[1,2],[1,3],[1,3],[1,2],[2]],                              # Section table, 4 levels, byes for top 8 seeds
                     [[2],[1,2],[1,3],[1,3],[1,2],[1,2],[1,4],[1,4],[1,2],[1,2],[1,3],[1,3],[1,2],[2]], 
@@ -405,7 +517,16 @@ class WikiScrapper:
         return matches
     
     
-    def parse_level_results(self, tsp):
+    def parse_level_results(self, tsp: dict) -> list:
+        """
+        Parse edition results page
+        
+        Args:
+            tsp: input results page (name and link)
+            
+        Returns:
+            List of match results
+        """
         print(tsp['link'])
         page = requests.get(self.wikipedia_page+tsp['link'])
         soup = BeautifulSoup(page.text, 'html.parser')
@@ -424,23 +545,18 @@ class WikiScrapper:
         all_match_results = []
         tables = soup.find_all('table', cellpadding='0')
         for table in tables:
-            #print(table)
             tr_rows = table.find_all('tr')
             rounds_labels = self.infer_rounds_labels(tr_rows[0])
-            #print(rounds_labels)
             players_sls = self.extract_players_scorelines(tr_rows[1:])
-            #print(players_sls)
             matches_ress = self.scorelines_to_matches(players_sls, rounds_labels)
-            #print('=>')
-            #print(matches_ress)
             all_match_results += matches_ress
         return all_match_results
 
 
-    def is_valid_link(self, rplink):
+    def is_valid_link(self, rplink: str) -> bool:
         return (str(rplink).startswith('/wiki'))
 
-    def parse_height(self, s):
+    def parse_height(self, s: str) -> str:
         #h_regex = re.compile(r'\d\.\d\d(.*)(m)')
         h_regex = re.compile(r'\d\.\d\d')
         result = h_regex.search(s)
@@ -449,7 +565,16 @@ class WikiScrapper:
         else:
             return '-1'
 
-    def parse_hands(self, s):
+    def parse_hands(self, s: str) -> Tuple[str, str]:
+        """
+        Parse handedness and backhand type
+        
+        Args:
+            s: input string
+            
+        Returns:
+            Handedness (left/right), backhand type (one/two)
+        """
         hand = 'unknown'
         backhand_type = 'unknown'
         lows = s.lower()
@@ -463,7 +588,7 @@ class WikiScrapper:
             backhand_type = 'two'
         return hand, backhand_type
 
-    def parse_dob(self, s):
+    def parse_dob(self, s: str) -> str:
         h_regex = re.compile(r'\d\d\d\d-\d\d-\d\d')
         result = h_regex.search(s)
         if result:
@@ -471,7 +596,16 @@ class WikiScrapper:
         else:
             return 'unknown'
 
-    def parse_player_info(self, rplink):
+    def parse_player_info(self, rplink: str) -> dict:
+        """
+        Parse player page
+        
+        Args:
+            rplink: page link
+            
+        Returns:
+            Player info (name, country, etc.)
+        """
         player_info = {'name': 'unknown', 'height': -1, 'country': 'unknown', 'dob': 'unknown',
                        'hand': 'unknown', 'backhand_type': 'unknown'}
         #print(rplink)
@@ -492,12 +626,6 @@ class WikiScrapper:
                         header = th.get_text()
                         #print(td.get_text())
                         if header.startswith('Country'):
-                            #if td.find('a'):
-                            #    country = td.find('a').get_text()
-                            #else:
-                            #    tmp = td.get_text('|')
-                            #    print(tmp)
-                            #    country = tmp.split('|')[-1]
                             toks = td.get_text('|').split('|')
                             country = toks[-1]
                             if '(' in country or '[' in country:
@@ -526,7 +654,10 @@ class WikiScrapper:
             player_info['name'] = p_name
         return player_info
 
-    def parse_players_from_match_results(self, all_match_results):
+    def parse_players_from_match_results(self, all_match_results: list) -> dict:
+        """
+        DEPRECATED
+        """
         print(f'Parsing players from {len(all_match_results)} match results')
         raw_players_links = {}
         for m_res in all_match_results:
@@ -546,7 +677,17 @@ class WikiScrapper:
             p_id += 1
         return players_dict
 
-    def parse_players_if_new(self, all_match_results, all_players_dict):
+    def parse_players_if_new(self, all_match_results: list, all_players_dict: dict) -> dict:
+        """
+        Parse player info if not already known
+        
+        Args:
+            all_match_results: list of match results to extract players from
+            all_players_dict: dict of already known players
+            
+        Returns:
+            Dict of new players (key = name)
+        """
         print(f'Parsing players from {len(all_match_results)} match results')
         raw_players_links = {}
         for m_res in all_match_results:
@@ -565,14 +706,33 @@ class WikiScrapper:
                 players_dict[rplink] = player_info
         return players_dict
 
-    def update_players_dict_from_match_results(self, players_dict, match_results):
+    def update_players_dict_from_match_results(self, players_dict: dict, match_results: list) -> dict:
+        """
+        Add new players info
+        
+        Args:
+            players_dict: dict of already known players
+            match_results: list of match results to extract players from
+            
+        Returns:
+            Updated dict of players info
+        """
         new_dict = copy.deepcopy(players_dict)
         app_dict = self.parse_players_if_new(match_results, players_dict)
         for app_key in app_dict:
             new_dict[app_key] = app_dict[app_key]
         return new_dict
 
-    def make_dataframe_results(self, m_ress):
+    def make_dataframe_results(self, m_ress: list) -> pd.DataFrame:
+        """
+        Convert list of match results to dataframe
+        
+        Args:
+            m_ress: match results
+            
+        Returns:
+            Dataframe of match results
+        """
         data_rows = []
         feats = ['player_one','player_two','round','score']
         for m_res in m_ress:
@@ -585,6 +745,9 @@ class WikiScrapper:
         return df
 
     def parse_full_tree(self):
+        """
+        DEPRECATED
+        """
         tourney_types = self.parse_root_page()
         #self.parse_level_type('https://en.wikipedia.org/wiki/ATP_250')
         tourneys = []
@@ -606,7 +769,17 @@ class WikiScrapper:
         print(f'Found {len(t_singles_pages)} corresponding singles pages')
 
 
-    def get_dict_from_csv(self, csvfile, key_field):
+    def get_dict_from_csv(self, csvfile: str, key_field: str) -> dict:
+        """
+        Read csv data and build dict of players info
+        
+        Args:
+            csvfile: players csv file
+            key_field: dataframe column to use as dict key
+            
+        Returns:
+            Dict of players info
+        """
         out_dict = {}
         df = pd.read_csv(csvfile)
         other_fields = df.columns.values.tolist()
@@ -621,16 +794,20 @@ class WikiScrapper:
             out_dict[row[key_field]] = elt
         return out_dict
 
-    def write_results(self, tourney, edition, results, results_file, overwrite=False):
-        return
 
-
-    def check_folder_exists(self, folder_path):
+    def check_folder_exists(self, folder_path: str):
         if not os.path.exists(folder_path) or not os.path.isdir(folder_path):
             os.makedirs(folder_path)
 
     # key = wiki link
-    def write_players_file(self, players_dict, players_file):
+    def write_players_file(self, players_dict: dict, players_file: str):
+        """
+        (over)write players info file
+        
+        Args:
+            players_dict: players info
+            players_file: output file path
+        """
         if players_dict:
             cols = list(players_dict[next(iter(players_dict))])
             data_rows = []
@@ -644,6 +821,17 @@ class WikiScrapper:
 
 
     def parse_full_tree_incremental(self, overwrite=False, exclude_tourney_types=[]):
+        """
+        Full scrapping/parsing process, starting from the ATP tour root page
+        
+        Tournament results are organized by year: 1 folder per year, 1 file per tournament in this folder
+        Players file is overwritten every time a results file is written
+        If interrupted (manually or by an error), this process will restart where it stopped
+        
+        Args:
+            overwrite: [NOT FULLY TESTED] restart the process from the beginning each time, overwriting everything
+            exclude_tourney_types: types of tournaments to exclude from the parsing process
+        """
         players_file = os.path.join(self.data_folder_players, 'players.csv')
         players_dict = {}
         if os.path.exists(players_file):
@@ -678,6 +866,9 @@ class WikiScrapper:
                             
 
     def test_incremental(self, overwrite=False):
+        """
+        Test function
+        """
         players_file = os.path.join(self.data_folder_players, 'players.csv')
         players_dict = {}
         if os.path.exists(players_file):
@@ -712,6 +903,9 @@ class WikiScrapper:
                             self.write_players_file(players_dict, players_file)
 
     def test_current_step(self):
+        """
+        Test function
+        """
         #ted = {'link': '/wiki/1972_Monte_Carlo_Open'}
         #tsp = self.parse_level_edition(ted)
         #print(tsp)
@@ -749,6 +943,13 @@ class WikiScrapper:
 
 
 class ATPScrapper:
+    """
+    Functions to scrap and parse data from the ATP website
+    
+    The results on this website are more complete, better formatted, and easier to parse than on Wikipedia
+    Unfortunately, this site blocks web scrapping tools, so we could not use it
+    Keeping this code just in case it becomes possible through some other way
+    """
     atp_page = ''
     root_page = ''
     

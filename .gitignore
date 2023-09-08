@@ -10,3 +10,4 @@ gsm/__pycache__
 gsm/conf/__pycache__
 gsm/data/__pycache__
 gsm/models/__pycache__
+test/__pycache__
