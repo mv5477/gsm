@@ -1,14 +1,13 @@
-import sys
 import os
 
 train_data_folder = os.path.abspath(os.path.join('data', 'results'))
 test_data_folder = os.path.abspath(os.path.join('data', 'results_test'))
 
 # model parameters
-n_dims = 32
-alpha = 0.4
-beta_one = 0.1
-beta_two = 0.3
-epsilon = 0.01
-k_nn = 5
-gamma = 0.5
+N_DIMS = 32
+ALPHA = 0.4
+BETA_ONE = 0.1
+BETA_TWO = 0.3
+EPSILON = 0.01
+K_NN = 5
+GAMMA = 0.5

@@ -1,9 +1,8 @@
-import sys
 import os
-import pandas as pd
 import json
 import copy
 from typing import Tuple
+import pandas as pd
 #sys.path.append(os.path.abspath(os.path.join('..', 'gsm')))
 import gsm.conf.conf_data_prep as cfg
 
@@ -25,8 +24,8 @@ def get_latest_tourney_info(results_folder: str) -> dict:
         # assumes that files are read "in order" (same as writing order, i.e. chronological)
         for f in files:
             f_path = os.path.join(subfolder, f)
-            f = open(f_path, 'r')
-            header = f.readline()
+            with open(f_path, 'r') as fil:
+                header = fil.readline()
             header_dict = json.loads(header)
             t_name = header_dict['name']
             t_info_dict[t_name] = header_dict
@@ -78,7 +77,7 @@ def infer_features_type(d: dict) -> dict:
                 f_type = 'numeric'
             feat_to_type[feat] = f_type
     return feat_to_type
-        
+
 
 def compute_sim_mat(tourneys_dict: dict, feats_to_normalize: list) -> Tuple[list, list]:
     """
@@ -120,7 +119,7 @@ def compute_sim_mat(tourneys_dict: dict, feats_to_normalize: list) -> Tuple[list
             sim_mat[i][j] = diff
             sim_mat[j][i] = diff
     return sim_mat, tourneys
-    
+
     
 def compute_features(tourneys_dict: dict, feats_to_normalize: list) -> Tuple[dict, list]:
     """
@@ -134,12 +133,11 @@ def compute_features(tourneys_dict: dict, feats_to_normalize: list) -> Tuple[dic
         Similarity matrix as a 2d list, list of elements names in the same order as the matrix
     """
     tourneys = list(tourneys_dict.keys())
-    n = len(tourneys_dict)
     d = copy.deepcopy(tourneys_dict)
     for ftn in feats_to_normalize:
         d = normalize_feat(d, ftn)
     return d, tourneys
-   
+
 
 def get_country_to_region_dict(countries_file: str) -> dict:
     """
@@ -167,7 +165,7 @@ def write_sim_mat_to_csv(sim_mat, elts, outfile):
     df = pd.DataFrame(data_rows)
     df.columns = (['name']+elts)
     df.to_csv(outfile, index=False)
-    
+
     
 def write_tourneys_features_to_csv(feats_dict: dict, elts: list, outfile: str, n_tiers=3):
     """
@@ -196,7 +194,7 @@ def write_tourneys_features_to_csv(feats_dict: dict, elts: list, outfile: str, n
     df = pd.DataFrame(data_rows)
     df.columns = (['name']+feats_list+['round_tier'])
     df.to_csv(outfile, index=False)
-    
+
     
 def write_players_features_to_csv(feats_dict: dict, elts: list, outfile: str):
     """
@@ -241,7 +239,7 @@ def build_tourneys_file_old(results_folder, tourneys_simmat_outfile):
         ti['subregion'] = subregion
     sim_mat, tourneys = compute_sim_mat(tourneys_info, feats_to_normalize=['last_prize_pool'])
     write_sim_mat_to_csv(sim_mat, tourneys, tourneys_simmat_outfile)
-    
+
     
 def build_tourneys_file(results_folder: str, tourneys_feats_outfile: str):
     """
@@ -270,7 +268,7 @@ def build_tourneys_file(results_folder: str, tourneys_feats_outfile: str):
         ti['subregion'] = subregion  
     t_feats, tourneys = compute_features(tourneys_info, feats_to_normalize=['last_prize_pool','drawsize'])
     write_tourneys_features_to_csv(t_feats, tourneys, tourneys_feats_outfile)
-   
+
 
 def get_yob_as_int(x: str) -> int:
     """
@@ -328,7 +326,7 @@ def build_players_file_old(players_file, players_simmat_outfile):
         ti['subregion'] = subregion
     sim_mat, players = compute_sim_mat(players_info, feats_to_normalize=['height','dob'])
     write_sim_mat_to_csv(sim_mat, players, players_simmat_outfile)
-    
+
     
 def build_players_file(players_file: str, players_feats_outfile: str):
     """

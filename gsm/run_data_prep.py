@@ -1,6 +1,7 @@
 import os
 import gsm.data.webscrapping as ws
 import gsm.data.data_prep as dp
+import gsm.conf.conf_data_prep as cfgdp
 
 
 def build_input_files(results_path: str, players_path: str, countries_file: str, prepped_data_path: str):
@@ -22,6 +23,5 @@ def build_input_files(results_path: str, players_path: str, countries_file: str,
 
 if __name__=='__main__':
     scrapper = ws.WikiScrapper()
-    results_path = scrapper.get_results_path()
-    players_path = scrapper.get_players_path()
-    build_input_files(results_path, players_path, countries_file, prepped_data_path)
+    build_input_files(scrapper.get_results_path(), scrapper.get_players_path(),
+                      cfgdp.countries_file, cfgdp.prepped_data_path)

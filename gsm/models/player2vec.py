@@ -1,6 +1,5 @@
 import sys
 import os
-import shutil
 import pandas as pd
 import numpy as np
 import math
@@ -66,7 +65,7 @@ def infer_full_context(s_round: str, base_tourney_name: str, contexts_dict: dict
     else:
         print(f'warning: could not infer stage of round {s_round}')
         return -1
-    
+
 
 def infer_winner_from_scoreline(scoreline: str) -> int:
     """
@@ -254,7 +253,7 @@ def get_random_embedding(rng: np.random, d: int, lower: float, upper: float) -> 
     """
     embd = [rng.uniform(lower,upper) for _ in range(d)]
     return np.array(embd)
-    
+
     
 def init_embeddings(n_elts: int, d: int, seed=16) -> list:
     """
@@ -274,7 +273,7 @@ def init_embeddings(n_elts: int, d: int, seed=16) -> list:
     lower_bound = -1./(2.*float(d))
     upper_bound = 1./(2.*float(d))
     x_p = []
-    for i in range(n_elts):
+    for _ in range(n_elts):
         emb = get_random_embedding(rng, d, lower_bound, upper_bound)
         x_p.append(emb)
     return x_p
@@ -392,7 +391,7 @@ def get_random_embedding_with_condition(rng: np.random, d: int, lower: float, up
     #print(f'=> embedding = {embd}')
     rel_one_three = compute_embeddings_pairwise_relevance(embeddings[previous_inds[0]], embd)
     rel_two_three = compute_embeddings_pairwise_relevance(embeddings[previous_inds[1]], embd)
-    c = ((prev_rel > rel_one_three) and (prev_rel > rel_two_three))
+    #c = ((prev_rel > rel_one_three) and (prev_rel > rel_two_three))
     #print(f'meets_conditions : {c} | {prev_rel} | {rel_one_three} | {rel_two_three}')
     return embd
 
@@ -437,10 +436,12 @@ def init_anchor_embeddings_from_sim_mat(sim_mat: list, d: int, seed=12) -> list:
         ind_two = ordered_pairs[i][1]
         #print(f'Iteration {i} : {previous_inds} ; {ind_one}, {ind_two}')
         if not defined[ind_one]:
-            embeddings[ind_one] = get_random_embedding_with_condition(rng, d, lower_bound, upper_bound, embeddings, previous_inds)
+            embeddings[ind_one] = get_random_embedding_with_condition(rng, d, lower_bound, upper_bound,
+                                                                      embeddings, previous_inds)
             defined[ind_one] = True
         if not defined[ind_two]:
-            embeddings[ind_two] = get_random_embedding_with_condition(rng, d, lower_bound, upper_bound, embeddings, previous_inds)
+            embeddings[ind_two] = get_random_embedding_with_condition(rng, d, lower_bound, upper_bound,
+                                                                      embeddings, previous_inds)
             defined[ind_two] = True
     return embeddings
 
@@ -489,7 +490,7 @@ def infer_features_type(d: dict) -> dict:
                 f_type = 'numeric'
             feat_to_type[feat] = f_type
     return feat_to_type
-        
+
 
 def compute_sim_mat(tourneys_dict: dict, feats_to_normalize: list) -> Tuple[list, list]:
     """
@@ -572,14 +573,13 @@ def compute_anchor_embedding_contexts(tourneys_feats_file, d):
 def map_column(x, d):
     if x in d:
         return d[x]
-    else:
-        #print(f'warning: no entry for key {x}')
-        return -1
+    #print(f'warning: no entry for key {x}')
+    return -1
 
 def is_in_dict(x, d):
     return (x in d)
 
-# 
+
 def format_players_dataframe(players_feats_file: str, players_dict: dict) -> pd.DataFrame:
     """
     One-hot encoding for categorical features
@@ -653,11 +653,11 @@ def load_players_data(players_feats_file: str, edges_pc: list, players_dict: dic
     data_lists = []
     for player in player_to_data.keys():
         results = player_to_results[player]
-        for i_wins in range(results['wins']):
+        for _ in range(results['wins']):
             data = player_to_data[player].copy()
             data.append(1)
             data_lists.append(data)
-        for i_losses in range(results['losses']):
+        for _ in range(results['losses']):
             data = player_to_data[player].copy()
             data.append(0)
             data_lists.append(data)
@@ -665,7 +665,7 @@ def load_players_data(players_feats_file: str, edges_pc: list, players_dict: dic
     df_with_labels = pd.DataFrame(data=data_lists)
     print(f'df_with_labels : {df_with_labels.shape} | df_raw : {df_raw.shape}')
     return df_with_labels, df_raw
-    
+
     
 def load_contexts_raw_data(contexts_feats_file: str) -> pd.DataFrame:
     """
@@ -730,8 +730,7 @@ def infer_df_features_type(df: pd.DataFrame) -> list:
 def i_func(x, y):
     if x==y:
         return 1
-    else:
-        return 0
+    return 0
 
 def compute_players_relevance(edges: list, w: list, users_feats: pd.DataFrame)-> dict:
     """
@@ -763,17 +762,15 @@ def compute_players_relevance(edges: list, w: list, users_feats: pd.DataFrame)->
         new_dict[up] = rel
         rels_u[u] = new_dict
     return rels_u
-   
+
 
 def i_func_t(x, y, t):
     if t=='binary':
         if x==y:
             return 1
-        else:
-            return 0
-    else:
-        return abs(x-y)
-   
+        return 0
+    return abs(x-y)
+
 
 def compute_relevance(edges: list, feats: pd.DataFrame, weights: list) -> dict:
     """
@@ -902,7 +899,8 @@ def has_converged(epsilon, vects_before, vects_after):
     return conv
 
 # Player2Vec
-def learn_players_embeddings(edges_pc, users_data, users_data_raw, x_c, n_players, n_dims, alpha, beta_one, beta_two, epsilon, k_nn):
+def learn_players_embeddings(edges_pc, users_data, users_data_raw, x_c, n_players, n_dims,
+                             alpha, beta_one, beta_two, epsilon, k_nn):
     """
     v1, only learning players embeddings (cf. doc)
     """
@@ -937,12 +935,12 @@ def learn_players_embeddings(edges_pc, users_data, users_data_raw, x_c, n_player
             n_losses = edge_pc[3]
             #xp = x_p[p]
             xc = x_c[c]
-            for iw in range(n_wins):
+            for _ in range(n_wins):
                 xp = x_p[p]
                 cb = get_random_other(contexts_inds, c)
                 xcb = x_c[cb]
                 x_p[p] = xp - (alpha/iters)*(sigmoid(np.dot(xp,xc)) - 1)*xc - (alpha/iters)*(sigmoid(np.dot(xp,xcb)))*xcb
-            for il in range(n_losses):
+            for _ in range(n_losses):
                 xp = x_p[p]
                 cb = get_random_other(contexts_inds, c)
                 xcb = x_c[cb]
@@ -952,7 +950,8 @@ def learn_players_embeddings(edges_pc, users_data, users_data_raw, x_c, n_player
     return x_p
 
 
-def learn_joint_embeddings(edges_pc, players_data, players_data_raw, contexts_data_raw, n_dims, alpha, beta_one, beta_two, epsilon, k_nn):
+def learn_joint_embeddings(edges_pc, players_data, players_data_raw, contexts_data_raw, n_dims,
+                           alpha, beta_one, beta_two, epsilon, k_nn):
     """
     v2, joint learning of players and contexts embeddings
     """
@@ -998,16 +997,18 @@ def learn_joint_embeddings(edges_pc, players_data, players_data_raw, contexts_da
             n_wins = edge_pc[2]
             n_losses = edge_pc[3]
             #xp = x_p[p]
-            for iw in range(n_wins):
+            for _ in range(n_wins):
                 xp = x_p[p]
                 xr = x_r[1]
-                xrb = x_r[0]
-                x_p[p] = xp - (alpha/iters)*(sigmoid(np.dot(xp,xr)) - 1)*xr - (alpha/iters)*(sigmoid(np.dot(xp,xrb)))*xrb
-            for il in range(n_losses):
+                #xrb = x_r[0]
+                #x_p[p] = xp - (alpha/iters)*(sigmoid(np.dot(xp,xr)) - 1)*xr - (alpha/iters)*(sigmoid(np.dot(xp,xrb)))*xrb
+                x_p[p] = xp - (alpha/iters)*(sigmoid(np.dot(xp,xr)) - 1)*xr
+            for _ in range(n_losses):
                 xp = x_p[p]
                 xr = x_r[0]
-                xrb = x_r[1]
-                x_p[p] = xp - (alpha/iters)*(sigmoid(np.dot(xp,xr)) - 1)*xr - (alpha/iters)*(sigmoid(np.dot(xp,xrb)))*xrb
+                #xrb = x_r[1]
+                #x_p[p] = xp - (alpha/iters)*(sigmoid(np.dot(xp,xr)) - 1)*xr - (alpha/iters)*(sigmoid(np.dot(xp,xrb)))*xrb
+                x_p[p] = xp - (alpha/iters)*(sigmoid(np.dot(xp,xr)) - 1)*xr
         converged = has_converged(epsilon, [x_p_prev,x_c_prev], [x_p,x_c])
         iters += 1
     return x_p, x_c, x_r
@@ -1038,7 +1039,7 @@ def evaluate_embeddings_on_test_folder(folder_path, x_p, x_c, players_dict, cont
         else:
             wrong += 1
     print(f'right = {right} | wrong = {wrong}')
-    
+
     
 def compute_outcome_v2(x_p, x_c, x_r, p_one, p_two, c, gamma):
     xc = x_c[c]
@@ -1065,7 +1066,7 @@ def evaluate_embeddings_on_test_folder_v2(folder_path, x_p, x_c, x_r, players_di
         else:
             wrong += 1
     print(f'right = {right} | wrong = {wrong}')
-    
+
 
 def p2vec_wrapper(players_feats_file, tourneys_feats_file, results_folder, test_folder):
     """
@@ -1081,7 +1082,8 @@ def p2vec_wrapper(players_feats_file, tourneys_feats_file, results_folder, test_
     contexts_list, contexts_dict = load_list_and_map(tourneys_feats_file, col='name_stage')
     x_c = compute_anchor_embedding_contexts(tourneys_feats_file, n_dims)
     #x_r = compute_anchor_embedding_results(tourneys_feats_file)
-    edges_pc, players_list, players_dict = load_edges_and_players_from_results(players_feats_file, results_folder, contexts_dict)
+    edges_pc, players_list, players_dict = load_edges_and_players_from_results(players_feats_file,
+                                                                               results_folder, contexts_dict)
     players_data, players_data_raw = load_players_data(players_feats_file, edges_pc, players_dict)
     n_players = players_data_raw.shape[0]
     x_p = learn_players_embeddings(edges_pc, players_data, players_data_raw, x_c,
@@ -1102,7 +1104,8 @@ def p2vec_v2_wrapper(players_feats_file, tourneys_feats_file, results_folder, te
     gamma = 0.5
     contexts_list, contexts_dict = load_list_and_map(tourneys_feats_file, col='name_stage')
     #edges_cc = compute_contexts_intra_edges(tourneys_feats_file, n_dims)
-    edges_pc, players_list, players_dict = load_edges_and_players_from_results(players_feats_file, results_folder, contexts_dict)
+    edges_pc, players_list, players_dict = load_edges_and_players_from_results(players_feats_file,
+                                                                               results_folder, contexts_dict)
     players_data, players_data_raw = load_players_data(players_feats_file, edges_pc, players_dict)
     contexts_data_raw = load_contexts_raw_data(tourneys_feats_file)
     x_p, x_c, x_r = learn_joint_embeddings(edges_pc, players_data, players_data_raw, contexts_data_raw,
@@ -1113,19 +1116,20 @@ def p2vec_v2_wrapper():
     """
     v2 using config file
     """
-    n_dims = cfg.n_dims
-    alpha = cfg.alpha
-    beta_one = cfg.beta_one
-    beta_two = cfg.beta_two
-    epsilon = cfg.epsilon
-    k_nn = cfg.k_nn
-    gamma = cfg.gamma
+    n_dims = cfg.N_DIMS
+    alpha = cfg.ALPHA
+    beta_one = cfg.BETA_ONE
+    beta_two = cfg.BETA_TWO
+    epsilon = cfg.EPSILON
+    k_nn = cfg.K_NN
+    gamma = cfg.GAMMA
     players_feats_file = os.path.join(cfg_dp.prepped_data_path, 'inp_players.csv')
     tourneys_feats_file = os.path.join(cfg_dp.prepped_data_path, 'inp_tourneys.csv')
     results_folder = cfg.train_data_folder
     test_folder = cfg.test_data_folder
     contexts_list, contexts_dict = load_list_and_map(tourneys_feats_file, col='name_stage')
-    edges_pc, players_list, players_dict = load_edges_and_players_from_results(players_feats_file, results_folder, contexts_dict)
+    edges_pc, players_list, players_dict = load_edges_and_players_from_results(players_feats_file,
+                                                                               results_folder, contexts_dict)
     players_data, players_data_raw = load_players_data(players_feats_file, edges_pc, players_dict)
     contexts_data_raw = load_contexts_raw_data(tourneys_feats_file)
     x_p, x_c, x_r = learn_joint_embeddings(edges_pc, players_data, players_data_raw, contexts_data_raw,
