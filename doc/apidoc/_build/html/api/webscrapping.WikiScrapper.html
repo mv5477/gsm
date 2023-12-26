@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>WikiScrapper &#8212; GSM 0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=4f649999" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=039e1c02" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=eafc0fe6" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=04720642" />
+    <script src="../_static/documentation_options.js?v=2709fde1"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="player2vec" href="../models/player2vec.html" />
+    <link rel="prev" title="ATPScrapper" href="webscrapping.ATPScrapper.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="wikiscrapper">
+<h1>WikiScrapper<a class="headerlink" href="#wikiscrapper" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="webscrapping.WikiScrapper">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">webscrapping.</span></span><span class="sig-name descname"><span class="pre">WikiScrapper</span></span><a class="headerlink" href="#webscrapping.WikiScrapper" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Functions to scrap and parse data from Wikipedia</p>
+<p class="rubric">Attributes Summary</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#webscrapping.WikiScrapper.root_page" title="webscrapping.WikiScrapper.root_page"><code class="xref py py-obj docutils literal notranslate"><span class="pre">root_page</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#webscrapping.WikiScrapper.wikipedia_page" title="webscrapping.WikiScrapper.wikipedia_page"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wikipedia_page</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods Summary</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#webscrapping.WikiScrapper.check_folder_exists" title="webscrapping.WikiScrapper.check_folder_exists"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_folder_exists</span></code></a>(folder_path)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#webscrapping.WikiScrapper.extract_first_int" title="webscrapping.WikiScrapper.extract_first_int"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extract_first_int</span></code></a>(s)</p></td>
+<td><p>Parse first integer in string</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#webscrapping.WikiScrapper.extract_players_scorelines" title="webscrapping.WikiScrapper.extract_players_scorelines"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extract_players_scorelines</span></code></a>(tr_rows)</p></td>
+<td><p>Parse scorelines from the tree result in Wikipedia pages</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#webscrapping.WikiScrapper.extract_prize_money" title="webscrapping.WikiScrapper.extract_prize_money"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extract_prize_money</span></code></a>(s)</p></td>
+<td><p>Similar to extract_first_int, handling prize moneys formats</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#webscrapping.WikiScrapper.find_and_parse_tourney_infobox" title="webscrapping.WikiScrapper.find_and_parse_tourney_infobox"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_and_parse_tourney_infobox</span></code></a>(page_soup, ...)</p></td>
+<td><p>Parse infobox on tournament page, adding prize pool and location country</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#webscrapping.WikiScrapper.fix_scoreline" title="webscrapping.WikiScrapper.fix_scoreline"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fix_scoreline</span></code></a>(scoreline)</p></td>
+<td><p>Catch edge cases in set results</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#webscrapping.WikiScrapper.format_surface" title="webscrapping.WikiScrapper.format_surface"><code class="xref py py-obj docutils literal notranslate"><span class="pre">format_surface</span></code></a>(raw_surf)</p></td>
+<td><p>Formatting and removing brackets for hard courts (Grand Slam table mostly)</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#webscrapping.WikiScrapper.get_dict_from_csv" title="webscrapping.WikiScrapper.get_dict_from_csv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_dict_from_csv</span></code></a>(csvfile, key_field)</p></td>
+<td><p>Read csv data and build dict of players info</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#webscrapping.WikiScrapper.get_players_path" title="webscrapping.WikiScrapper.get_players_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_players_path</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#webscrapping.WikiScrapper.get_results_path" title="webscrapping.WikiScrapper.get_results_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_results_path</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#webscrapping.WikiScrapper.infer_rounds_labels" title="webscrapping.WikiScrapper.infer_rounds_labels"><code class="xref py py-obj docutils literal notranslate"><span class="pre">infer_rounds_labels</span></code></a>(tr_row)</p></td>
+<td><p>Harmonize rounds labels</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#webscrapping.WikiScrapper.is_valid_link" title="webscrapping.WikiScrapper.is_valid_link"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_valid_link</span></code></a>(rplink)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#webscrapping.WikiScrapper.make_dataframe_results" title="webscrapping.WikiScrapper.make_dataframe_results"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_dataframe_results</span></code></a>(m_ress)</p></td>
+<td><p>Convert list of match results to dataframe</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#webscrapping.WikiScrapper.parse_dob" title="webscrapping.WikiScrapper.parse_dob"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_dob</span></code></a>(s)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#webscrapping.WikiScrapper.parse_full_tree" title="webscrapping.WikiScrapper.parse_full_tree"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_full_tree</span></code></a>()</p></td>
+<td><p>DEPRECATED</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#webscrapping.WikiScrapper.parse_full_tree_incremental" title="webscrapping.WikiScrapper.parse_full_tree_incremental"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_full_tree_incremental</span></code></a>([overwrite, ...])</p></td>
+<td><p>Full scrapping/parsing process, starting from the ATP tour root page</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#webscrapping.WikiScrapper.parse_hands" title="webscrapping.WikiScrapper.parse_hands"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_hands</span></code></a>(s)</p></td>
+<td><p>Parse handedness and backhand type</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#webscrapping.WikiScrapper.parse_height" title="webscrapping.WikiScrapper.parse_height"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_height</span></code></a>(s)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#webscrapping.WikiScrapper.parse_level_edition" title="webscrapping.WikiScrapper.parse_level_edition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_level_edition</span></code></a>(ted)</p></td>
+<td><p>Parse tournament edition page to find link to (mens singles) results page</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#webscrapping.WikiScrapper.parse_level_results" title="webscrapping.WikiScrapper.parse_level_results"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_level_results</span></code></a>(tsp)</p></td>
+<td><p>Parse edition results page</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#webscrapping.WikiScrapper.parse_level_tourney" title="webscrapping.WikiScrapper.parse_level_tourney"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_level_tourney</span></code></a>(tourney)</p></td>
+<td><p>Parse tournament page to gather the list of editions, and get additional info from infobox</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#webscrapping.WikiScrapper.parse_level_type" title="webscrapping.WikiScrapper.parse_level_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_level_type</span></code></a>(ttype)</p></td>
+<td><p>Parse tournament type page (e.g. the ATP 500 page).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#webscrapping.WikiScrapper.parse_player_info" title="webscrapping.WikiScrapper.parse_player_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_player_info</span></code></a>(rplink)</p></td>
+<td><p>Parse player page</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#webscrapping.WikiScrapper.parse_players_from_match_results" title="webscrapping.WikiScrapper.parse_players_from_match_results"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_players_from_match_results</span></code></a>(...)</p></td>
+<td><p>DEPRECATED</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#webscrapping.WikiScrapper.parse_players_if_new" title="webscrapping.WikiScrapper.parse_players_if_new"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_players_if_new</span></code></a>(all_match_results, ...)</p></td>
+<td><p>Parse player info if not already known</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#webscrapping.WikiScrapper.parse_root_page" title="webscrapping.WikiScrapper.parse_root_page"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_root_page</span></code></a>()</p></td>
+<td><p>Parse tournaments types from the root (ATP) page</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#webscrapping.WikiScrapper.parse_root_page_sidebar" title="webscrapping.WikiScrapper.parse_root_page_sidebar"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_root_page_sidebar</span></code></a>()</p></td>
+<td><p>DEPRECATED</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#webscrapping.WikiScrapper.parse_tourneys_table" title="webscrapping.WikiScrapper.parse_tourneys_table"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_tourneys_table</span></code></a>(table, ttype_name)</p></td>
+<td><p>Parse html table containing the list of tournaments</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#webscrapping.WikiScrapper.scorelines_to_matches" title="webscrapping.WikiScrapper.scorelines_to_matches"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scorelines_to_matches</span></code></a>(scorelines_rows, ...)</p></td>
+<td><p>Reconstruct match results from rows scorelines</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#webscrapping.WikiScrapper.test_current_step" title="webscrapping.WikiScrapper.test_current_step"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_current_step</span></code></a>()</p></td>
+<td><p>Test function</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#webscrapping.WikiScrapper.test_incremental" title="webscrapping.WikiScrapper.test_incremental"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_incremental</span></code></a>([overwrite])</p></td>
+<td><p>Test function</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#webscrapping.WikiScrapper.update_players_dict_from_match_results" title="webscrapping.WikiScrapper.update_players_dict_from_match_results"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_players_dict_from_match_results</span></code></a>(...)</p></td>
+<td><p>Add new players info</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#webscrapping.WikiScrapper.write_players_file" title="webscrapping.WikiScrapper.write_players_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_players_file</span></code></a>(players_dict, players_file)</p></td>
+<td><p>(over)write players info file</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes Documentation</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="webscrapping.WikiScrapper.root_page">
+<span class="sig-name descname"><span class="pre">root_page</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#webscrapping.WikiScrapper.root_page" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="webscrapping.WikiScrapper.wikipedia_page">
+<span class="sig-name descname"><span class="pre">wikipedia_page</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#webscrapping.WikiScrapper.wikipedia_page" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p class="rubric">Methods Documentation</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="webscrapping.WikiScrapper.check_folder_exists">
+<span class="sig-name descname"><span class="pre">check_folder_exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folder_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#webscrapping.WikiScrapper.check_folder_exists" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="webscrapping.WikiScrapper.extract_first_int">
+<span class="sig-name descname"><span class="pre">extract_first_int</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#webscrapping.WikiScrapper.extract_first_int" title="Link to this definition">¶</a></dt>
+<dd><p>Parse first integer in string</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>s</strong> – input string</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Integer value</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="webscrapping.WikiScrapper.extract_players_scorelines">
+<span class="sig-name descname"><span class="pre">extract_players_scorelines</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tr_rows</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#webscrapping.WikiScrapper.extract_players_scorelines" title="Link to this definition">¶</a></dt>
+<dd><p>Parse scorelines from the tree result in Wikipedia pages</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>page_soup</strong> – BeautifulSoup object of results tree</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of scores for each line</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="webscrapping.WikiScrapper.extract_prize_money">
+<span class="sig-name descname"><span class="pre">extract_prize_money</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#webscrapping.WikiScrapper.extract_prize_money" title="Link to this definition">¶</a></dt>
+<dd><p>Similar to extract_first_int, handling prize moneys formats</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>s</strong> – input string</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Integer value</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="webscrapping.WikiScrapper.find_and_parse_tourney_infobox">
+<span class="sig-name descname"><span class="pre">find_and_parse_tourney_infobox</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">page_soup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tourney_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#webscrapping.WikiScrapper.find_and_parse_tourney_infobox" title="Link to this definition">¶</a></dt>
+<dd><p>Parse infobox on tournament page, adding prize pool and location country</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>page_soup</strong> – BeautifulSoup object of tournament page</p></li>
+<li><p><strong>tourney_info</strong> – current tournament info</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Updated tournament info</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="webscrapping.WikiScrapper.fix_scoreline">
+<span class="sig-name descname"><span class="pre">fix_scoreline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scoreline</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#webscrapping.WikiScrapper.fix_scoreline" title="Link to this definition">¶</a></dt>
+<dd><p>Catch edge cases in set results</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>scoreline</strong> – input string</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Cleaned scoreline</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="webscrapping.WikiScrapper.format_surface">
+<span class="sig-name descname"><span class="pre">format_surface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_surf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#webscrapping.WikiScrapper.format_surface" title="Link to this definition">¶</a></dt>
+<dd><p>Formatting and removing brackets for hard courts (Grand Slam table mostly)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>raw_surf</strong> – input string</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>‘Hard’ or ‘Hard (indoor)’</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="webscrapping.WikiScrapper.get_dict_from_csv">
+<span class="sig-name descname"><span class="pre">get_dict_from_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">csvfile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_field</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#webscrapping.WikiScrapper.get_dict_from_csv" title="Link to this definition">¶</a></dt>
+<dd><p>Read csv data and build dict of players info</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>csvfile</strong> – players csv file</p></li>
+<li><p><strong>key_field</strong> – dataframe column to use as dict key</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dict of players info</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="webscrapping.WikiScrapper.get_players_path">
+<span class="sig-name descname"><span class="pre">get_players_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#webscrapping.WikiScrapper.get_players_path" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="webscrapping.WikiScrapper.get_results_path">
+<span class="sig-name descname"><span class="pre">get_results_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#webscrapping.WikiScrapper.get_results_path" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="webscrapping.WikiScrapper.infer_rounds_labels">
+<span class="sig-name descname"><span class="pre">infer_rounds_labels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tr_row</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#webscrapping.WikiScrapper.infer_rounds_labels" title="Link to this definition">¶</a></dt>
+<dd><p>Harmonize rounds labels</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tr_row</strong> – BeautifulSoup object of results table</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of rounds labels</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="webscrapping.WikiScrapper.is_valid_link">
+<span class="sig-name descname"><span class="pre">is_valid_link</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rplink</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#webscrapping.WikiScrapper.is_valid_link" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="webscrapping.WikiScrapper.make_dataframe_results">
+<span class="sig-name descname"><span class="pre">make_dataframe_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m_ress</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="headerlink" href="#webscrapping.WikiScrapper.make_dataframe_results" title="Link to this definition">¶</a></dt>
+<dd><p>Convert list of match results to dataframe</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>m_ress</strong> – match results</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dataframe of match results</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="webscrapping.WikiScrapper.parse_dob">
+<span class="sig-name descname"><span class="pre">parse_dob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#webscrapping.WikiScrapper.parse_dob" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="webscrapping.WikiScrapper.parse_full_tree">
+<span class="sig-name descname"><span class="pre">parse_full_tree</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#webscrapping.WikiScrapper.parse_full_tree" title="Link to this definition">¶</a></dt>
+<dd><p>DEPRECATED</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="webscrapping.WikiScrapper.parse_full_tree_incremental">
+<span class="sig-name descname"><span class="pre">parse_full_tree_incremental</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_tourney_types</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#webscrapping.WikiScrapper.parse_full_tree_incremental" title="Link to this definition">¶</a></dt>
+<dd><p>Full scrapping/parsing process, starting from the ATP tour root page</p>
+<p>Tournament results are organized by year: 1 folder per year, 1 file per tournament in this folder
+Players file is overwritten every time a results file is written
+If interrupted (manually or by an error), this process will restart where it stopped</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>overwrite</strong> – [NOT FULLY TESTED] restart the process from the beginning each time, overwriting everything</p></li>
+<li><p><strong>exclude_tourney_types</strong> – types of tournaments to exclude from the parsing process</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="webscrapping.WikiScrapper.parse_hands">
+<span class="sig-name descname"><span class="pre">parse_hands</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#webscrapping.WikiScrapper.parse_hands" title="Link to this definition">¶</a></dt>
+<dd><p>Parse handedness and backhand type</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>s</strong> – input string</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Handedness (left/right), backhand type (one/two)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="webscrapping.WikiScrapper.parse_height">
+<span class="sig-name descname"><span class="pre">parse_height</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#webscrapping.WikiScrapper.parse_height" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="webscrapping.WikiScrapper.parse_level_edition">
+<span class="sig-name descname"><span class="pre">parse_level_edition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ted</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#webscrapping.WikiScrapper.parse_level_edition" title="Link to this definition">¶</a></dt>
+<dd><p>Parse tournament edition page to find link to (mens singles) results page</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ted</strong> – input edition (name and link)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Edition info with link to results page</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="webscrapping.WikiScrapper.parse_level_results">
+<span class="sig-name descname"><span class="pre">parse_level_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tsp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#webscrapping.WikiScrapper.parse_level_results" title="Link to this definition">¶</a></dt>
+<dd><p>Parse edition results page</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tsp</strong> – input results page (name and link)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of match results</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="webscrapping.WikiScrapper.parse_level_tourney">
+<span class="sig-name descname"><span class="pre">parse_level_tourney</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tourney</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#webscrapping.WikiScrapper.parse_level_tourney" title="Link to this definition">¶</a></dt>
+<dd><p>Parse tournament page to gather the list of editions, and get additional info from infobox</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tourney</strong> – input tournament (name and link)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of editions (= years), updated tournament info</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="webscrapping.WikiScrapper.parse_level_type">
+<span class="sig-name descname"><span class="pre">parse_level_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ttype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#webscrapping.WikiScrapper.parse_level_type" title="Link to this definition">¶</a></dt>
+<dd><p>Parse tournament type page (e.g. the ATP 500 page)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ttype</strong> – input type (name and link)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of entries (dicts) with tournaments info</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="webscrapping.WikiScrapper.parse_player_info">
+<span class="sig-name descname"><span class="pre">parse_player_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rplink</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#webscrapping.WikiScrapper.parse_player_info" title="Link to this definition">¶</a></dt>
+<dd><p>Parse player page</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>rplink</strong> – page link</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Player info (name, country, etc.)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="webscrapping.WikiScrapper.parse_players_from_match_results">
+<span class="sig-name descname"><span class="pre">parse_players_from_match_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">all_match_results</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#webscrapping.WikiScrapper.parse_players_from_match_results" title="Link to this definition">¶</a></dt>
+<dd><p>DEPRECATED</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="webscrapping.WikiScrapper.parse_players_if_new">
+<span class="sig-name descname"><span class="pre">parse_players_if_new</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">all_match_results</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">all_players_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#webscrapping.WikiScrapper.parse_players_if_new" title="Link to this definition">¶</a></dt>
+<dd><p>Parse player info if not already known</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>all_match_results</strong> – list of match results to extract players from</p></li>
+<li><p><strong>all_players_dict</strong> – dict of already known players</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dict of new players (key = name)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="webscrapping.WikiScrapper.parse_root_page">
+<span class="sig-name descname"><span class="pre">parse_root_page</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#webscrapping.WikiScrapper.parse_root_page" title="Link to this definition">¶</a></dt>
+<dd><p>Parse tournaments types from the root (ATP) page</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List of tournaments types (name and link), e.g. ‘ATP 500’</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="webscrapping.WikiScrapper.parse_root_page_sidebar">
+<span class="sig-name descname"><span class="pre">parse_root_page_sidebar</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#webscrapping.WikiScrapper.parse_root_page_sidebar" title="Link to this definition">¶</a></dt>
+<dd><p>DEPRECATED</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="webscrapping.WikiScrapper.parse_tourneys_table">
+<span class="sig-name descname"><span class="pre">parse_tourneys_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ttype_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#webscrapping.WikiScrapper.parse_tourneys_table" title="Link to this definition">¶</a></dt>
+<dd><p>Parse html table containing the list of tournaments</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>table</strong> – BeautifulSoup object with parsed HTML table</p></li>
+<li><p><strong>ttype_name</strong> – tournament type</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of entries (dicts) with tournaments info</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="webscrapping.WikiScrapper.scorelines_to_matches">
+<span class="sig-name descname"><span class="pre">scorelines_to_matches</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scorelines_rows</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rounds_labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#webscrapping.WikiScrapper.scorelines_to_matches" title="Link to this definition">¶</a></dt>
+<dd><p>Reconstruct match results from rows scorelines</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scorelines_rows</strong> – list of scores for each row</p></li>
+<li><p><strong>rounds_labels</strong> – rounds labels</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of match results</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="webscrapping.WikiScrapper.test_current_step">
+<span class="sig-name descname"><span class="pre">test_current_step</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#webscrapping.WikiScrapper.test_current_step" title="Link to this definition">¶</a></dt>
+<dd><p>Test function</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="webscrapping.WikiScrapper.test_incremental">
+<span class="sig-name descname"><span class="pre">test_incremental</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#webscrapping.WikiScrapper.test_incremental" title="Link to this definition">¶</a></dt>
+<dd><p>Test function</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="webscrapping.WikiScrapper.update_players_dict_from_match_results">
+<span class="sig-name descname"><span class="pre">update_players_dict_from_match_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">players_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">match_results</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#webscrapping.WikiScrapper.update_players_dict_from_match_results" title="Link to this definition">¶</a></dt>
+<dd><p>Add new players info</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>players_dict</strong> – dict of already known players</p></li>
+<li><p><strong>match_results</strong> – list of match results to extract players from</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Updated dict of players info</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="webscrapping.WikiScrapper.write_players_file">
+<span class="sig-name descname"><span class="pre">write_players_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">players_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">players_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#webscrapping.WikiScrapper.write_players_file" title="Link to this definition">¶</a></dt>
+<dd><p>(over)write players info file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>players_dict</strong> – players info</p></li>
+<li><p><strong>players_file</strong> – output file path</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">GSM</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../data/data_prep.html">data_prep</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../data/webscrapping.html">webscrapping</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../data/webscrapping.html#classes">Classes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../models/player2vec.html">player2vec</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../data/webscrapping.html">webscrapping</a><ul>
+      <li>Previous: <a href="webscrapping.ATPScrapper.html" title="previous chapter">ATPScrapper</a></li>
+      <li>Next: <a href="../models/player2vec.html" title="next chapter">player2vec</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, Max V.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+      |
+      <a href="../_sources/api/webscrapping.WikiScrapper.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -8,13 +8,15 @@
     <title>player2vec &#8212; GSM 0.1 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=4f649999" />
     <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=039e1c02" />
-    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=eafc0fe6" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=04720642" />
     <script src="../_static/documentation_options.js?v=2709fde1"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="prev" title="preprocessing" href="../data/preprocessing.html" />
+    <link rel="next" title="adjust_embd_manually" href="../api/player2vec.adjust_embd_manually.html" />
+    <link rel="prev" title="WikiScrapper" href="../api/webscrapping.WikiScrapper.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -31,8 +33,144 @@
 
           <div class="body" role="main">
             
-  <section id="player2vec">
-<h1>player2vec<a class="headerlink" href="#player2vec" title="Link to this heading">¶</a></h1>
+  <section id="module-player2vec">
+<span id="player2vec"></span><h1>player2vec<a class="headerlink" href="#module-player2vec" title="Link to this heading">¶</a></h1>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading">¶</a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api/player2vec.adjust_embd_manually.html#player2vec.adjust_embd_manually" title="player2vec.adjust_embd_manually"><code class="xref py py-obj docutils literal notranslate"><span class="pre">adjust_embd_manually</span></code></a>(rng, embd_one, ...[, ...])</p></td>
+<td><p>Adjust embedding values by hand to force it to meets the condition</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../api/player2vec.compute_anchor_embedding_contexts.html#player2vec.compute_anchor_embedding_contexts" title="player2vec.compute_anchor_embedding_contexts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_anchor_embedding_contexts</span></code></a>(...)</p></td>
+<td><p>v1, deprecated</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api/player2vec.compute_embeddings_pairwise_relevance.html#player2vec.compute_embeddings_pairwise_relevance" title="player2vec.compute_embeddings_pairwise_relevance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_embeddings_pairwise_relevance</span></code></a>(...[, ...])</p></td>
+<td><p>Compute pairwise relevance (similarity) between two embeddings</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../api/player2vec.compute_outcome.html#player2vec.compute_outcome" title="player2vec.compute_outcome"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_outcome</span></code></a>(x_p, x_c, p_one, p_two, c)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api/player2vec.compute_outcome_v2.html#player2vec.compute_outcome_v2" title="player2vec.compute_outcome_v2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_outcome_v2</span></code></a>(x_p, x_c, x_r, p_one, ...)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../api/player2vec.compute_players_relevance.html#player2vec.compute_players_relevance" title="player2vec.compute_players_relevance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_players_relevance</span></code></a>(edges, w, users_feats)</p></td>
+<td><p>Compute closest neighbors (from edges) players pairwise relevance</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api/player2vec.compute_relevance.html#player2vec.compute_relevance" title="player2vec.compute_relevance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_relevance</span></code></a>(edges, feats, weights)</p></td>
+<td><p>Cleaner/more general version of 'compute_players_relevance'</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../api/player2vec.compute_sim_mat.html#player2vec.compute_sim_mat" title="player2vec.compute_sim_mat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_sim_mat</span></code></a>(tourneys_dict, ...)</p></td>
+<td><p>Compute similarity matrix from tournaments features file</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api/player2vec.evaluate_embeddings_on_test_folder.html#player2vec.evaluate_embeddings_on_test_folder" title="player2vec.evaluate_embeddings_on_test_folder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_embeddings_on_test_folder</span></code></a>(...)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../api/player2vec.evaluate_embeddings_on_test_folder_v2.html#player2vec.evaluate_embeddings_on_test_folder_v2" title="player2vec.evaluate_embeddings_on_test_folder_v2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_embeddings_on_test_folder_v2</span></code></a>(...)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api/player2vec.fix_opposed_embeddings.html#player2vec.fix_opposed_embeddings" title="player2vec.fix_opposed_embeddings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fix_opposed_embeddings</span></code></a>(d)</p></td>
+<td><p>Fix embeddings that represent the two match outcomes: win or loss</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../api/player2vec.format_players_dataframe.html#player2vec.format_players_dataframe" title="player2vec.format_players_dataframe"><code class="xref py py-obj docutils literal notranslate"><span class="pre">format_players_dataframe</span></code></a>(players_feats_file, ...)</p></td>
+<td><p>One-hot encoding for categorical features</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api/player2vec.get_edges_from_kdtree.html#player2vec.get_edges_from_kdtree" title="player2vec.get_edges_from_kdtree"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_edges_from_kdtree</span></code></a>(data, k_nn, weights)</p></td>
+<td><p>Find closest neighbors from data</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../api/player2vec.get_random_embedding.html#player2vec.get_random_embedding" title="player2vec.get_random_embedding"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_random_embedding</span></code></a>(rng, d, lower, upper)</p></td>
+<td><p>Generates random embedding with values bounded</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api/player2vec.get_random_embedding_with_condition.html#player2vec.get_random_embedding_with_condition" title="player2vec.get_random_embedding_with_condition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_random_embedding_with_condition</span></code></a>(rng, d, ...)</p></td>
+<td><p>Generate random embedding r_3 such that rel(r_1,r_2) &gt; rel(r_1,r_3) and rel(r_1,r_2) &gt; rel(r_2,r_3)</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../api/player2vec.get_random_other.html#player2vec.get_random_other" title="player2vec.get_random_other"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_random_other</span></code></a>(elts, i_used)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api/player2vec.has_converged.html#player2vec.has_converged" title="player2vec.has_converged"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_converged</span></code></a>(epsilon, vects_before, vects_after)</p></td>
+<td><p>Compare vectors before and after, check if they have changed by less than epsilon in total</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../api/player2vec.i_func.html#player2vec.i_func" title="player2vec.i_func"><code class="xref py py-obj docutils literal notranslate"><span class="pre">i_func</span></code></a>(x, y)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api/player2vec.i_func_t.html#player2vec.i_func_t" title="player2vec.i_func_t"><code class="xref py py-obj docutils literal notranslate"><span class="pre">i_func_t</span></code></a>(x, y, t)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../api/player2vec.infer_df_features_type.html#player2vec.infer_df_features_type" title="player2vec.infer_df_features_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">infer_df_features_type</span></code></a>(df)</p></td>
+<td><p>Same as 'infer_features_type', applied to a dataframe instead of a dict</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api/player2vec.infer_features_type.html#player2vec.infer_features_type" title="player2vec.infer_features_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">infer_features_type</span></code></a>(d)</p></td>
+<td><p>Find out if features are numeric or categoric</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../api/player2vec.infer_full_context.html#player2vec.infer_full_context" title="player2vec.infer_full_context"><code class="xref py py-obj docutils literal notranslate"><span class="pre">infer_full_context</span></code></a>(s_round, ...)</p></td>
+<td><p>Building full context name from round and tournament name, and get matching index</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api/player2vec.infer_winner_from_scoreline.html#player2vec.infer_winner_from_scoreline" title="player2vec.infer_winner_from_scoreline"><code class="xref py py-obj docutils literal notranslate"><span class="pre">infer_winner_from_scoreline</span></code></a>(scoreline)</p></td>
+<td><p>Find winner by looking at the (last set) results</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../api/player2vec.init_anchor_embeddings_from_sim_mat.html#player2vec.init_anchor_embeddings_from_sim_mat" title="player2vec.init_anchor_embeddings_from_sim_mat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_anchor_embeddings_from_sim_mat</span></code></a>(sim_mat, d)</p></td>
+<td><p>Generate anchor embeddings based on the input relevance/similarity matrix</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api/player2vec.init_embeddings.html#player2vec.init_embeddings" title="player2vec.init_embeddings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_embeddings</span></code></a>(n_elts, d[, seed])</p></td>
+<td><p>Generate n_elts random embeddings</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../api/player2vec.is_in_dict.html#player2vec.is_in_dict" title="player2vec.is_in_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_in_dict</span></code></a>(x, d)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api/player2vec.learn_joint_embeddings.html#player2vec.learn_joint_embeddings" title="player2vec.learn_joint_embeddings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">learn_joint_embeddings</span></code></a>(edges_pc, ...)</p></td>
+<td><p>v2, joint learning of players and contexts embeddings</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../api/player2vec.learn_players_embeddings.html#player2vec.learn_players_embeddings" title="player2vec.learn_players_embeddings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">learn_players_embeddings</span></code></a>(edges_pc, ...)</p></td>
+<td><p>v1, only learning players embeddings (cf.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api/player2vec.learn_weights.html#player2vec.learn_weights" title="player2vec.learn_weights"><code class="xref py py-obj docutils literal notranslate"><span class="pre">learn_weights</span></code></a>(data)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../api/player2vec.load_contexts_raw_data.html#player2vec.load_contexts_raw_data" title="player2vec.load_contexts_raw_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_contexts_raw_data</span></code></a>(contexts_feats_file)</p></td>
+<td><p>Similar to 'load_players_data', but only building features dataframe</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api/player2vec.load_edges_and_players_from_results.html#player2vec.load_edges_and_players_from_results" title="player2vec.load_edges_and_players_from_results"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_edges_and_players_from_results</span></code></a>(...)</p></td>
+<td><p>Parse results from folder as weighted edges of the joint graph representation</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../api/player2vec.load_list_and_map.html#player2vec.load_list_and_map" title="player2vec.load_list_and_map"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_list_and_map</span></code></a>(infile, col)</p></td>
+<td><p>Load list and dict of elements in column col, for future reference (retrieving names etc.)</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api/player2vec.load_players_data.html#player2vec.load_players_data" title="player2vec.load_players_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_players_data</span></code></a>(players_feats_file, ...)</p></td>
+<td><p>Read and preprocess players features, and store in two dataframes</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../api/player2vec.load_results.html#player2vec.load_results" title="player2vec.load_results"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_results</span></code></a>(results_folder, players_dict, ...)</p></td>
+<td><p>Lightweight version of 'load_edges_and_players_from_results', only loading results as edges</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api/player2vec.map_column.html#player2vec.map_column" title="player2vec.map_column"><code class="xref py py-obj docutils literal notranslate"><span class="pre">map_column</span></code></a>(x, d)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../api/player2vec.meets_conditions.html#player2vec.meets_conditions" title="player2vec.meets_conditions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">meets_conditions</span></code></a>(prev_rel, embd_one, ...)</p></td>
+<td><p>Check that the three embeddings fulfill the condition for anchor embeddings generation</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api/player2vec.normalize_feat.html#player2vec.normalize_feat" title="player2vec.normalize_feat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">normalize_feat</span></code></a>(d, feat)</p></td>
+<td><p>Normalize numeric feature to a [0,1] range</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../api/player2vec.p2vec_v2_wrapper.html#player2vec.p2vec_v2_wrapper" title="player2vec.p2vec_v2_wrapper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">p2vec_v2_wrapper</span></code></a>()</p></td>
+<td><p>v2 using config file</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api/player2vec.p2vec_wrapper.html#player2vec.p2vec_wrapper" title="player2vec.p2vec_wrapper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">p2vec_wrapper</span></code></a>(players_feats_file, ...)</p></td>
+<td><p>v1</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../api/player2vec.read_feats_as_dict.html#player2vec.read_feats_as_dict" title="player2vec.read_feats_as_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_feats_as_dict</span></code></a>(infile[, i_index, ignore])</p></td>
+<td><p>Store data from csv as dict</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api/player2vec.sigmoid.html#player2vec.sigmoid" title="player2vec.sigmoid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sigmoid</span></code></a>(x)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../api/player2vec.split_xy.html#player2vec.split_xy" title="player2vec.split_xy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">split_xy</span></code></a>(data)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api/player2vec.update_edges.html#player2vec.update_edges" title="player2vec.update_edges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_edges</span></code></a>(edges_dict, ind_player, ...)</p></td>
+<td><p>Helper function to update the edges dict depending on the result</p></td>
+</tr>
+</tbody>
+</table>
+</section>
 </section>
 
 
@@ -55,15 +193,19 @@
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../data/data_prep.html">data_prep</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../data/preprocessing.html">preprocessing</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">player2vec</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data/webscrapping.html">webscrapping</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">player2vec</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#functions">Functions</a></li>
+</ul>
+</li>
 </ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="../data/preprocessing.html" title="previous chapter">preprocessing</a></li>
+      <li>Previous: <a href="../api/webscrapping.WikiScrapper.html" title="previous chapter">WikiScrapper</a></li>
+      <li>Next: <a href="../api/player2vec.adjust_embd_manually.html" title="next chapter">adjust_embd_manually</a></li>
   </ul></li>
 </ul>
 </div>

@@ -4,10 +4,10 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../../data-xy'))
-sys.path.insert(0, os.path.abspath('../../data-xy/data'))
-sys.path.insert(0, os.path.abspath('../../data-xy/models'))
-sys.path.insert(0, os.path.abspath('../../test'))
+sys.path.insert(0, os.path.abspath('../..'))
+sys.path.insert(0, os.path.abspath('../../gsm'))
+sys.path.insert(0, os.path.abspath('../../gsm/data'))
+sys.path.insert(0, os.path.abspath('../../gsm/models'))
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
@@ -20,11 +20,13 @@ release = '0.1'
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = []
+#extensions = ['sphinx.ext.autodoc']
+extensions = ['sphinx_automodapi.automodapi','sphinx.ext.napoleon']
 
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
+source_suffix = '.rst'
 
 
 # -- Options for HTML output -------------------------------------------------

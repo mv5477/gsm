@@ -1,5 +1,8 @@
 data/*
 
+doc/apidoc/_build/doctrees/*
+doc/apidoc/_build/html/_sources/*
+doc/apidoc/api/*
 doc/code*
 doc/trans2vec.pdf
 

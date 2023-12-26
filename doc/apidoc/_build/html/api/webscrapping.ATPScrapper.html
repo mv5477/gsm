@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>ATPScrapper &#8212; GSM 0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=4f649999" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=039e1c02" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=eafc0fe6" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=04720642" />
+    <script src="../_static/documentation_options.js?v=2709fde1"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="WikiScrapper" href="webscrapping.WikiScrapper.html" />
+    <link rel="prev" title="webscrapping" href="../data/webscrapping.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="atpscrapper">
+<h1>ATPScrapper<a class="headerlink" href="#atpscrapper" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="webscrapping.ATPScrapper">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">webscrapping.</span></span><span class="sig-name descname"><span class="pre">ATPScrapper</span></span><a class="headerlink" href="#webscrapping.ATPScrapper" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Functions to scrap and parse data from the ATP website</p>
+<p>The results on this website are more complete, better formatted, and easier to parse than on Wikipedia
+Unfortunately, this site blocks web scrapping tools, so we could not use it
+Keeping this code just in case it becomes possible through some other way</p>
+<p class="rubric">Attributes Summary</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#webscrapping.ATPScrapper.atp_page" title="webscrapping.ATPScrapper.atp_page"><code class="xref py py-obj docutils literal notranslate"><span class="pre">atp_page</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#webscrapping.ATPScrapper.root_page" title="webscrapping.ATPScrapper.root_page"><code class="xref py py-obj docutils literal notranslate"><span class="pre">root_page</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods Summary</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#webscrapping.ATPScrapper.build_cutpoints_from_n_rounds" title="webscrapping.ATPScrapper.build_cutpoints_from_n_rounds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">build_cutpoints_from_n_rounds</span></code></a>(n_rounds)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#webscrapping.ATPScrapper.build_url_year" title="webscrapping.ATPScrapper.build_url_year"><code class="xref py py-obj docutils literal notranslate"><span class="pre">build_url_year</span></code></a>(url_root, s_year)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#webscrapping.ATPScrapper.extract_info_from_res_page_url" title="webscrapping.ATPScrapper.extract_info_from_res_page_url"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extract_info_from_res_page_url</span></code></a>(url)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#webscrapping.ATPScrapper.extract_player_id_from_url" title="webscrapping.ATPScrapper.extract_player_id_from_url"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extract_player_id_from_url</span></code></a>(url)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#webscrapping.ATPScrapper.infer_round_from_index" title="webscrapping.ATPScrapper.infer_round_from_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">infer_round_from_index</span></code></a>(index, cutpoints)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#webscrapping.ATPScrapper.parse_full_tree" title="webscrapping.ATPScrapper.parse_full_tree"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_full_tree</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#webscrapping.ATPScrapper.parse_level_results" title="webscrapping.ATPScrapper.parse_level_results"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_level_results</span></code></a>(res_page_url, t_id, year)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#webscrapping.ATPScrapper.parse_level_year" title="webscrapping.ATPScrapper.parse_level_year"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_level_year</span></code></a>(url_year)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#webscrapping.ATPScrapper.parse_root_page" title="webscrapping.ATPScrapper.parse_root_page"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_root_page</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#webscrapping.ATPScrapper.parse_scoreline" title="webscrapping.ATPScrapper.parse_scoreline"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_scoreline</span></code></a>(s)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#webscrapping.ATPScrapper.update_tourneys_dict" title="webscrapping.ATPScrapper.update_tourneys_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_tourneys_dict</span></code></a>(t_dict_base, t_dict_app)</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes Documentation</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="webscrapping.ATPScrapper.atp_page">
+<span class="sig-name descname"><span class="pre">atp_page</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#webscrapping.ATPScrapper.atp_page" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="webscrapping.ATPScrapper.root_page">
+<span class="sig-name descname"><span class="pre">root_page</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#webscrapping.ATPScrapper.root_page" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p class="rubric">Methods Documentation</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="webscrapping.ATPScrapper.build_cutpoints_from_n_rounds">
+<span class="sig-name descname"><span class="pre">build_cutpoints_from_n_rounds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_rounds</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#webscrapping.ATPScrapper.build_cutpoints_from_n_rounds" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="webscrapping.ATPScrapper.build_url_year">
+<span class="sig-name descname"><span class="pre">build_url_year</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url_root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s_year</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#webscrapping.ATPScrapper.build_url_year" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="webscrapping.ATPScrapper.extract_info_from_res_page_url">
+<span class="sig-name descname"><span class="pre">extract_info_from_res_page_url</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#webscrapping.ATPScrapper.extract_info_from_res_page_url" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="webscrapping.ATPScrapper.extract_player_id_from_url">
+<span class="sig-name descname"><span class="pre">extract_player_id_from_url</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#webscrapping.ATPScrapper.extract_player_id_from_url" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="webscrapping.ATPScrapper.infer_round_from_index">
+<span class="sig-name descname"><span class="pre">infer_round_from_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutpoints</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#webscrapping.ATPScrapper.infer_round_from_index" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="webscrapping.ATPScrapper.parse_full_tree">
+<span class="sig-name descname"><span class="pre">parse_full_tree</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#webscrapping.ATPScrapper.parse_full_tree" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="webscrapping.ATPScrapper.parse_level_results">
+<span class="sig-name descname"><span class="pre">parse_level_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">res_page_url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">year</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#webscrapping.ATPScrapper.parse_level_results" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="webscrapping.ATPScrapper.parse_level_year">
+<span class="sig-name descname"><span class="pre">parse_level_year</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url_year</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#webscrapping.ATPScrapper.parse_level_year" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="webscrapping.ATPScrapper.parse_root_page">
+<span class="sig-name descname"><span class="pre">parse_root_page</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#webscrapping.ATPScrapper.parse_root_page" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="webscrapping.ATPScrapper.parse_scoreline">
+<span class="sig-name descname"><span class="pre">parse_scoreline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#webscrapping.ATPScrapper.parse_scoreline" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="webscrapping.ATPScrapper.update_tourneys_dict">
+<span class="sig-name descname"><span class="pre">update_tourneys_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t_dict_base</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_dict_app</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#webscrapping.ATPScrapper.update_tourneys_dict" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">GSM</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../data/data_prep.html">data_prep</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../data/webscrapping.html">webscrapping</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../data/webscrapping.html#classes">Classes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../models/player2vec.html">player2vec</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../data/webscrapping.html">webscrapping</a><ul>
+      <li>Previous: <a href="../data/webscrapping.html" title="previous chapter">webscrapping</a></li>
+      <li>Next: <a href="webscrapping.WikiScrapper.html" title="next chapter">WikiScrapper</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, Max V.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+      |
+      <a href="../_sources/api/webscrapping.ATPScrapper.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
